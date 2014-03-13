@@ -57,11 +57,11 @@
 (define (validate-datetime dt)
   (or (date? dt)
       (time? dt)
+      (time-period? dt)
       (and (list? dt)
            (= (length dt) 2)
            (date? (car dt))
            (time? (cadr dt)))))
-           
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
