@@ -4,3 +4,6 @@
 *.swp
 *.import.scm
 *.db
+install
+*.jpg
+*.png
