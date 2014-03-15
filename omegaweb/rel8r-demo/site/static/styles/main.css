@@ -21,6 +21,8 @@
   text-align: center;
   background-color: #303030;
 }
+#main_region {
+}
 #page_title {
   padding: .7em 2em .7em .7em;
   font-size: 300%;
@@ -44,6 +46,10 @@
   width: 160px;
 }
 #main_display {
+  background: #ffdddd;
+  border: inset 1px;
+  height: 100%;
+  vertical-align: top;
 }
 #local_menu a, #quick_menu a {
   display: block;  
