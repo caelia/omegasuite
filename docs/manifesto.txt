@@ -1,0 +1,117 @@
+OmegaSuite: The Ultimate PIM
+============================
+
+PIM? I hear you saying. As in Personal Information Manager? Who cares about
+those any more?
+
+Well, I care, and if you don't, I'm going to try to change your mind here.
+Because this is a problem I've been thinking about, and occasionally working
+on, for 19 1/2 years--ever since I discovered that PIMs sucked.
+
+It was the summer of 1994, and I had just bought my first computer. It was a
+Compaq Aero Contura--a tiny laptop something like today's netbooks. It had a
+grayscale screen, Windows 3.1, and--woohoo!--a copy of Lotus Organizer.
+
+Well, hey, *I* thought it was exciting. I'm an organizer geek, so cut me
+some slack, K? But it didn't take me long to find out that Lotus Organizer
+failed in several significant ways. The skeuomorphic design, in which the
+program was made out to look like a paper organizer book, was in hindsight
+pretty lame. But what really got me was the way you made a link from one
+item to another. You would have to create a piece of text on one page, flip
+through the pages to the second location, enter the text you wanted there,
+then select it, then flip back to the first location, select that, THEN,
+finally, select the "Link" menu item.
+
+Uh-huh. Why? Why couldn't I start with the first item, select "Link", then
+directly enter the other text item that didn't exist yet as the other end of
+the link? Seemed like a no-brainer to me.
+
+And PIM software has continued to fail ever since. Calendars where you can't
+copy an item. ToDos where you can't associate an item with a project. Notes
+that don't connect with anything. No tags, no searching.
+
+No wonder you don't use a PIM (you don't, right? If you do, you're kind of
+weird, considering how lame most of them are). What all of these failed apps
+have in common is that they fail to provide a significant advantage over
+paper, because they fail to take full advantage of the unique capabilities
+of computers. Those capabilities are, in a nutshell:
+
+  * Linking;
+  * Transformation; and
+  * Multiple views of the same data
+
+Or, to distill all three of those concepts to a single one, it's the DRY
+principle. DRY is a saying among programmers that stands for Don't Repeat
+Yourself. In essence, it means that once you have typed a particular piece
+of data into a computer, you should not have to type it again, nor should
+you ever cut and paste it. If you fail to practice DRY, i.e. you enter the
+same information two or more times, you're wasting effort, inviting errors
+(because multiple copies of the same data can get out of sync if you modify
+one but not the others), and perhaps most importantly, you are likely to
+miss opportunities to gain a more comprehensive, richer view of the
+information.
+
+Let's look at a few examples:
+
+Calligra Braindump
+------------------
+
+I guess the name is okay. You get to experience a braindump of a wannabe UI
+designer's brain. As for dumping *your* brain ... well, I guess you need to
+be smarter than me to understand how this interface is supposed to work.
+
+todo.txt touch
+--------------
+
+This smartphone app is actually quite good within its narrow limits--but
+narrow those limits are. No projects, no linking with anything except for
+context. Doesn't work for me.
+
+Google Calendar
+---------------
+
+Yes, the almighty Google can do wrong. AKA: the emperor has no clothes. For
+example, you can't copy an event from one place on the calendar to another.
+
+Mozilla Thunderbird
+-------------------
+
+Takes 5 minutes to start up. 'Nuff said.
+
+Korganizer
+----------
+
+This calendar developed for the open-source KDE desktop environment suffers
+from developeritis--or at least it did. A while back I was taking a look at
+Korganizer with an eye toward maybe using it as my main calendar app. I
+discovered that, while there were buttons to view one day or a month, but
+not one week. This was quite surprising since there had been a week button
+in a previous version, so I look for some info on line. Someone had filed a
+bug report for this issue--and the developer assigned to the issue claimed
+it was not a bug because 'week' was not a view. Well. Um. In a technical
+sense I suppose he was right, but how clueless can you get about users and
+their expectations?
+
+Various Mind-mapping Applications
+---------------------------------
+
+Whoopee! I can fiddle with fonts and different line weights--and spend an
+hour making a really ugly diagram of my thoughts. There is, of course, more
+than one way to make a mind map, and it can be useful to create a more
+deliberate, embellished one as a record of your thoughts. But in my opinion
+the best use of mind maps involves working very quickly--the recording
+technique needs to match the speed of your brain.
+
+    It is a classic “catch 22.” The client wants something that is
+    significantly superior to the competition. But if superior, it cannot be
+    the same, so it must be different (typically the greater the
+    improvement, the greater the difference). Therefore it cannot be
+    intuitive, that is, familiar. What the client usually wants is an
+    interface with at most marginal differences that, somehow, makes a major
+    improvement. This can be achieved only on the rare occasions where the
+    original interface has some major flaw that is remedied by a minor fix.
+
+    --Jef Raskin, cited @
+    http://weblog.raganwald.com/2008/01/programming-language-cannot-be-better.html 
+    accessed 3/18/2014
+
