@@ -107,8 +107,8 @@
   "CREATE TABLE number_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    min FLOAT,
-    max FLOAT,
+    minval FLOAT,
+    maxval FLOAT,
     step FLOAT,
     digits INTEGER,
     description TEXT
@@ -118,8 +118,7 @@
   "CREATE TABLE vocabs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    term TEXT NOT NULL,
-    description TEXT
+    term TEXT NOT NULL
   );")
 
 (define create-cardinality-table-query
@@ -138,7 +137,8 @@
   "CREATE TABLE struct_types (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    extensible INTEGER default 0
+    extensible INTEGER default 0,
+    description TEXT
   );")
 
 (define create-type-class-table-query
@@ -163,17 +163,28 @@
   );")
 
 (define populate-types-table-queries
-  '("INSERT INTO types (name, class) SELECT 'integer', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'float', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'boolean', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'string', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'date', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'time', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'datetime', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'nref', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'rref', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'xref', id FROM type_classes WHERE name = 'primitive';"
-    "INSERT INTO types (name, class) SELECT 'any', id FROM type_classes WHERE name = 'union';"))
+  '("INSERT INTO types (name, class)
+     SELECT 'integer', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'float', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'boolean', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'string', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'date', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'time', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'datetime', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'nref', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'rref', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'xref', id FROM type_classes WHERE name = 'primitive';"
+    "INSERT INTO types (name, class)
+     SELECT 'any', id FROM type_classes WHERE name = 'union';"))
     
 (define create-union-type-table-query
   "CREATE TABLE union_types (
@@ -255,13 +266,11 @@
 ;;; ------  Queries  -------------------------------------------------------
 
 (define add-string-type-query
-  "INSERT INTO string_types (name, pattern) VALUES (?, ?);")
+  "INSERT INTO string_types (name, pattern, description) VALUES (?, ?, ?);")
 
 (define add-number-type-query
-  "INSERT INTO number_types (name) VALUES (?);")
-
-(define add-number-type-query
-  "INSERT INTO number_types (name) VALUES (?);")
+  "INSERT INTO number_types (name, minval, maxval, step, digits, description)
+   VALUES (?, ?, ?, ?, ?, ?);")
 
 (define add-vocab-type-term-query
   "INSERT INTO vocabs (name, term) VALUES (?, ?);")
@@ -269,7 +278,7 @@
 (define add-struct-type-query
   "INSERT INTO struct_types (name, extensible) VALUES (?, ?);")
 
-(define add-struct-type-member-query
+(define add-struct-member-query
   "INSERT INTO struct_type_members (struct_type, rel_name, cardinality, mem_type)
     SELECT struct_types.id, ?, cardinalities.id, types.id)
     FROM struct_types, cardinalities, types
@@ -283,6 +292,10 @@
 
 (define update-string-type-query
   "UPDATE string_types SET pattern = ? WHERE name = ?;")
+
+(define update-number-type-query
+  "UPDATE number_types SET minval = ?, maxval = ?, step = ?, digits = ?
+   WHERE name = ?;")
 
 (define update-number-type-min-query
   "UPDATE number_types SET minval = ? WHERE name = ?;")
@@ -299,7 +312,26 @@
 (define update-vocab-type-delete-term-query
   "DELETE FROM vocabs WHERE name = ? and term = ?;")
 
-(define update-struct-type-query "")
+(define update-struct-type-extensible-query
+  "UPDATE struct_types SET extensible = ? WHERE name = ?;")
+
+(define update-struct-type-description-query
+  "UPDATE struct_types SET description = ? WHERE name = ?;")
+
+(define update-struct-member-type-query
+  "UPDATE struct_type_members SET mem_type = types.id
+   WHERE struct_type = struct_types.id AND struct_types.name = ?
+   AND rel_name = ? AND types.name = ?;")
+
+(define update-struct-member-cardinality-query
+  "UPDATE struct_type_members SET cardinality = cardinalities.id
+   WHERE struct_type = struct_types.id AND struct_types.name = ?
+   AND rel_name = ? AND cardinalities.name = ?;")
+
+(define update-struct-member-relname-query
+  "UPDATE struct_type_members SET rel_name = ?
+   WHERE struct_type = struct_types.id AND struct_types.name = ?
+   AND rel_name = ?;")
 
 (define update-union-type-delete-member-query
   "DELETE FROM union_types WHERE name = ? and member_type = ?;")
@@ -316,59 +348,234 @@
 (define delete-struct-type-query
   "DELETE FROM struct_types WHERE name = ?;")
 
+(define delete-struct-member-query
+  "DELETE FROM struct_type_members
+   WHERE struct_type = struct_types.id AND struct_type.name = ?
+   AND rel_name = ?;")
+
 (define delete-union-type-query
   "DELETE FROM union_types WHERE name = ?;")
 
 (define delete-type-query
   "DELETE FROM types WHERE name = ?;")
 
+(define get-number-type-query
+  "SELECT minval, maxval, step, digits
+   FROM number_types WHERE name = ?;")
+
+(define get-struct-member-query
+  "SELECT cardinality, mem_type FROM struct_type_members, struct_types
+   WHERE struct_type = struct_types.id
+   AND struct_types.name = ? AND rel_name = ?;")
+
 ;;; ========================================================================
 ;;; ------  Functions  -----------------------------------------------------
 
-(define (add-string-type name pattern)
-  #f)
+(define (begin-transaction db)
+  (let ((st (sql/transient db "BEGIN TRANSACTION;")))
+    (exec st)))
 
-(define (add-number-type name #!key (minval #f) (maxval #f) (step #f) (digits #f))
-  #f)
+(define (do-query db/file f)
+  (let* ((db-obj? (not (string? db/file)))
+         (db (if db-obj? db/file (open-database db/file))))
+    (if db-obj?
+      (f db)
+      (begin
+        (handle-exceptions
+          exn
+          (lambda (exn) (rollback db) (close-database db) (abort exn))
+          (begin-transaction db)
+          (f db)
+          (commit db))
+        (close-database db)))))
 
-(define (add-vocab-type name terms)
-  #f)
+(define (add-general-type db name class)
+  (let ((st (sql/transient db add-type-query)))
+    (exec st name class)))
 
-(define (add-struct-type name #!key (extensible #t) (members '()))
-  #f)
+(define (delete-general-type db name)
+  (let ((st (sql/transient delete-type-query)))
+    (exec st name)))
 
-(define (add-union-type name members)
-  #f)
+(define (add-string-type db/file name pattern #!optional (description '()))
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db add-string-type-query)))
+        (exec st name pattern description))
+      (add-general-type db name "string"))))
 
-(define (update-string-type name pattern)
-  #f)
+(define (add-number-type db/file name #!key (minval '()) (maxval '())
+                                            (step '()) (digits '())
+                                            (description '()))
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db add-number-type-query)))
+        (exec st name minval maxval step digits description))
+      (add-general-type db name "number"))))
 
-(define (update-number-type name #!key (minval #f) (maxval #f) (step #f) (digits #f))
-  #f)
+(define (add-vocab-type db/file name terms)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql db add-vocab-type-term-query)))
+        (for-each
+          (lambda (term) (exec st name term))
+          terms))
+      (add-general-type db name "vocab"))))
 
-(define (update-vocab-type name terms)
-  #f)
+(define (add-struct-type db/file name #!key (extensible 1) (members '())
+                                            (description '()))
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st-main (sql/transient db add-struct-type-query))
+            (st-mem (sql db add-struct-member-query)))
+        (exec st-main name extensible description)
+        (for-each
+          (lambda (mem)
+            (exec st-mem
+                  (alist-ref 'rel-name mem)
+                  name
+                  (alist-ref 'cardinality mem)
+                  (alist-ref 'type mem)))
+          members))
+        (add-general-type db name "struct"))))
 
-(define (update-struct-type name #!key (extensible #t) (members '()))
-  #f)
+(define (add-union-type db/file name members)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql db add-union-type-member-query)))
+        (for-each
+          (lambda (mem) (exec st name mem))
+          members))
+      (add-general-type db name "union"))))
 
-(define (update-union-type name members)
-  #f)
+(define (update-string-type db/file name pattern)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db update-string-type-query)))
+        (exec st pattern name)))))
 
-(define (delete-string-type name pattern)
-  #f)
+(define (update-number-type db/file name #!key (minval #f) (maxval #f)
+                                               (step #f) (digits #f))
+  (do-query
+    db/file
+    (lambda (db)
+      (let* ((st-current (sql/transient db get-number-type-query))
+             (st-update (sql/transient db update-number-type-query))
+             (current-vals (query fetch-alist st-current name))
+             (minval* (or minval (alist-ref 'minval current-vals)))
+             (maxval* (or maxval (alist-ref 'maxval current-vals)))
+             (step* (or step (alist-ref 'step current-vals)))
+             (digits* (or digits (alist-ref 'digits current-vals))))
+        (exec st-update minval* maxval* step* digits* name)))))
 
-(define (delete-number-type name #!key (minval #f) (maxval #f) (step #f) (digits #f))
-  #f)
+(define (update-vocab-type db/file name #!key (terms+ '()) (terms- '()))
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st-add (sql db add-vocab-type-term-query))
+            (st-del (sql db update-vocab-type-delete-term-query)))
+        (for-each
+          (lambda (term) (exec st-add name term))
+          terms+)
+        (for-each
+          (lambda (term) (exec st-del name term))
+          terms-)))))
 
-(define (delete-vocab-type name terms)
-  #f)
+(define (update-struct-type db/file name #!key (extensible #t) (members+ '())
+                                               (members- '()) (members* '()))
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st-ext (sql/transient db update-struct-type-extensible-query))
+            (st-add (sql db add-struct-member-query))
+            (st-del (sql db delete-struct-member-query))
+            (st-current (sql db get-struct-member-query))
+            (st-mod (sql db update-struct-member-query)))
+        (exec st-ext extensible name)
+        (for-each
+          (lambda (mem)
+            (exec st-add
+                  (alist-ref 'rel-name mem)
+                  name
+                  (alist-ref 'cardinality mem)
+                  (alist-ref 'type mem)))
+          members+)
+        (for-each
+          (lambda (mem) (exec st-del name mem))
+          members-)
+        (for-each
+          (lambda (mem)
+            (let* ((rel-name (alist-ref 'rel-name mem))
+                   (current-values
+                     (query fetch-alist st-current name rel-name))
+                   (rel-name* (or (alist-ref 'new-rel-name mem) rel-name))
+                   (cardinality* (or (alist-ref 'cardinality mem)
+                                     (alist-ref 'cardinality current-values)))
+                   (mem-type* (or (alist-ref 'mem-type mem)
+                                  (alist-ref 'mem-type current-values))))
+              (exec st-mod rel-name* cardinality* mem-type* name rel-name)))
+          members*)))))
 
-(define (delete-struct-type name #!key (extensible #t) (members '()))
-  #f)
+(define (update-union-type db/file name #!key (members+ '()) (members- '()))
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st-add (sql db add-union-type-member-query))
+            (st-del (sql db update-union-type-delete-member-query)))
+        (for-each
+          (lambda (mem) (exec st-add name mem))
+          members+)
+        (for-each
+          (lambda (mem) (exec st-del name mem))
+          members-)))))
 
-(define (delete-union-type name members)
-  #f)
+(define (delete-string-type db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db delete-string-type-query)))
+        (exec st name))
+      (delete-general-type db name))))
+
+(define (delete-number-type db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db delete-number-type-query)))
+        (exec st name))
+      (delete-general-type db name))))
+
+(define (delete-vocab-type db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db delete-vocab-type-query)))
+        (exec st name))
+      (delete-general-type db name)))) 
+
+(define (delete-struct-type db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st-main (sql/transient db delete-struct-type-query))
+            (st-mem (sql/transient db delete-struct-members-query)))
+        (exec st-mem name)
+        (exec st-main name))
+      (delete-general-type db name))))
+
+(define (delete-union-type db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db delete-union-type-query)))
+        (exec st name))
+      (delete-general-type db name))))
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
