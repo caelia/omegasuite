@@ -9,6 +9,7 @@
         (import extras)
         (import data-structures)
         (import ports)
+        (import irregex)
         (use sql-de-lite)
         (use s11n)
         (use srfi-19)
@@ -624,7 +625,7 @@
     db/file
     (lambda (db)
       (let* ((st-cls (sql/transient db get-type-class-query))
-             (cls (fetch-value st-cls name))
+             (cls (fetch-value st-cls name)))
         (case (string->symbol cls)
           ((primitive) (string->symbol name))
           ((string) (get-string-type db name))
@@ -632,7 +633,9 @@
           ((vocab) (get-vocab-type db name))
           ((struct) (get-struct-type db name))
           ((union) (get-union-type db name))
-          (else (eprintf "Invalid type class"))))))))
+          (else (eprintf "Invalid type class")))))))
+
+(define (validate-string-type type value)
 
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
