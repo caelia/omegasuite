@@ -282,7 +282,7 @@
   "INSERT INTO struct_type_members (struct_type, rel_name, cardinality, mem_type)
     SELECT struct_types.id, ?, cardinalities.id, types.id)
     FROM struct_types, cardinalities, types
-    WHERE struct_types.name = ?  AND cardinalities.name = ? AND types.name = ?;"
+    WHERE struct_types.name = ?  AND cardinalities.name = ? AND types.name = ?;")
 
 (define add-union-type-member-query
   "INSERT INTO union_types (name, member_type) VALUES (?, ?);")
@@ -317,6 +317,12 @@
 
 (define update-struct-type-description-query
   "UPDATE struct_types SET description = ? WHERE name = ?;")
+
+(define update-struct-member-query
+  "UPDATE struct_type_members
+   SET rel_name = ?, cardinality = ?, mem_type = ?
+   WHERE struct_type = struct_types.id
+   AND struct_types.name = ? AND rel_name = ?;")
 
 (define update-struct-member-type-query
   "UPDATE struct_type_members SET mem_type = types.id
@@ -353,20 +359,41 @@
    WHERE struct_type = struct_types.id AND struct_type.name = ?
    AND rel_name = ?;")
 
+(define delete-struct-members-query
+  "DELETE FROM struct_type_members
+   WHERE struct_type = struct_types.id AND struct_type.name = ?;")
+
 (define delete-union-type-query
   "DELETE FROM union_types WHERE name = ?;")
 
 (define delete-type-query
   "DELETE FROM types WHERE name = ?;")
 
+(define get-string-type-query
+  "SELECT pattern FROM string_types WHERE name = ?;")
+
 (define get-number-type-query
   "SELECT minval, maxval, step, digits
    FROM number_types WHERE name = ?;")
+
+(define get-vocab-terms-query
+  "SELECT term FROM vocab_types WHERE name = ?;")
 
 (define get-struct-member-query
   "SELECT cardinality, mem_type FROM struct_type_members, struct_types
    WHERE struct_type = struct_types.id
    AND struct_types.name = ? AND rel_name = ?;")
+
+(define get-struct-type-query
+  "SELECT extensible, rel_name, cardinality, mem_type
+   FROM struct_types, struct_type_members
+   WHERE struct_types.name = ? AND struct_type_members.struct_type = struct_types.id;")
+
+(define get-union-type-members-query
+  "SELECT member_type FROM union_types WHERE name = ?;")
+
+(define get-type-class-query
+  "SELECT class FROM types WHERE name = ?;")
 
 ;;; ========================================================================
 ;;; ------  Functions  -----------------------------------------------------
@@ -496,7 +523,7 @@
             (st-add (sql db add-struct-member-query))
             (st-del (sql db delete-struct-member-query))
             (st-current (sql db get-struct-member-query))
-            (st-mod (sql db update-struct-member-query)))
+            (st-upd (sql db update-struct-member-query)))
         (exec st-ext extensible name)
         (for-each
           (lambda (mem)
@@ -519,7 +546,7 @@
                                      (alist-ref 'cardinality current-values)))
                    (mem-type* (or (alist-ref 'mem-type mem)
                                   (alist-ref 'mem-type current-values))))
-              (exec st-mod rel-name* cardinality* mem-type* name rel-name)))
+              (exec st-upd rel-name* cardinality* mem-type* name rel-name)))
           members*)))))
 
 (define (update-union-type db/file name #!key (members+ '()) (members- '()))
@@ -576,6 +603,37 @@
       (let ((st (sql/transient db delete-union-type-query)))
         (exec st name))
       (delete-general-type db name))))
+
+(define (get-string-type db/file name)
+  #f)
+
+(define (get-number-type db/file name)
+  #f)
+
+(define (get-vocab-type db/file name)
+  #f)
+
+(define (get-struct-type db/file name)
+  #f)
+
+(define (get-union-type db/file name)
+  #f)
+
+(define (get-type db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let* ((st-cls (sql/transient db get-type-class-query))
+             (cls (fetch-value st-cls name))
+        (case (string->symbol cls)
+          ((primitive) (string->symbol name))
+          ((string) (get-string-type db name))
+          ((number) (get-number-type db name))
+          ((vocab) (get-vocab-type db name))
+          ((struct) (get-struct-type db name))
+          ((union) (get-union-type db name))
+          (else (eprintf "Invalid type class"))))))))
+
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
