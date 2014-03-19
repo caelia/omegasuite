@@ -606,19 +606,39 @@
       (delete-general-type db name))))
 
 (define (get-string-type db/file name)
-  #f)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db get-string-type-query)))
+        (query fetch-value st name)))))
 
 (define (get-number-type db/file name)
-  #f)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db get-number-type-query)))
+        (query fetch-alist st name)))))
 
 (define (get-vocab-type db/file name)
-  #f)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db get-vocab-type-query)))
+        (query fetch-column st name)))))
 
 (define (get-struct-type db/file name)
-  #f)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db get-struct-type-query)))
+        (query fetch-alists st name)))))
 
 (define (get-union-type db/file name)
-  #f)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db get-union-type-members-query)))
+        (query fetch-column st name)))))
 
 (define (get-type db/file name)
   (do-query
@@ -635,7 +655,28 @@
           ((union) (get-union-type db name))
           (else (eprintf "Invalid type class")))))))
 
-(define (validate-string-type type value)
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+
+
+;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+;;; ----  VALIDATION FUNCTIONS  --------------------------------------------
+
+(define (validate-string-type db/file type value)
+  (let ((pattern (get-string-type db/file type)))
+    (irregex-match pattern value)))
+
+(define (validate-number-type db/file type value)
+  (let* ((typespec (get-number-type db/file type))
+         (minval (alist-ref 'minval typespec))
+         (maxval (alist-ref 'maxval typespec))
+         (step (alist-ref 'step typespec)))
+    (and (or (null? minval)
+             (>= value minval))
+         (or (null? maxval)
+             (<= value maxval))
+         (or (null? step)
+             (
 
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
