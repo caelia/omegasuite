@@ -10,6 +10,7 @@
         (import data-structures)
         (import ports)
         (import irregex)
+        (import srfi-1)
         (use sql-de-lite)
         (use s11n)
         (use srfi-19)
@@ -68,6 +69,11 @@
            (= (length dt) 2)
            (date? (car dt))
            (time? (cadr dt)))))
+
+(define (primitive? typespec)
+  (memv
+    (string->symbol typespec)
+    '(integer float boolean string date time datetime nref rref xref)))
 
 ;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
@@ -623,15 +629,24 @@
   (do-query
     db/file
     (lambda (db)
-      (let ((st (sql/transient db get-vocab-type-query)))
+      (let ((st (sql/transient db get-vocab-terms-query)))
         (query fetch-column st name)))))
 
 (define (get-struct-type db/file name)
   (do-query
     db/file
     (lambda (db)
-      (let ((st (sql/transient db get-struct-type-query)))
-        (query fetch-alists st name)))))
+      (let* ((st (sql/transient db get-struct-type-query))
+             (memspecs*
+               (query fetch-alists st name))
+             (extensible
+               (= (alist-ref 'extensible (car memspecs*))))
+             (memspecs
+               (map
+                 (lambda (ms)
+                   `(,(alist-ref 'rel-name ms) ,(alist-ref 'cardinality ms) ,(alist-ref 'mem-type ms)))
+                 memspecs*)))
+        `(,extensible ,memspecs)))))
 
 (define (get-union-type db/file name)
   (do-query
@@ -640,12 +655,18 @@
       (let ((st (sql/transient db get-union-type-members-query)))
         (query fetch-column st name)))))
 
+(define (get-type-class db/file name)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db get-type-class-query)))
+        (fetch-value st name)))))
+
 (define (get-type db/file name)
   (do-query
     db/file
     (lambda (db)
-      (let* ((st-cls (sql/transient db get-type-class-query))
-             (cls (fetch-value st-cls name)))
+      (let ((cls (get-type-class db name)))
         (case (string->symbol cls)
           ((primitive) (string->symbol name))
           ((string) (get-string-type db name))
@@ -662,6 +683,19 @@
 ;;; IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 ;;; ----  VALIDATION FUNCTIONS  --------------------------------------------
 
+(define (validate-primitive-type type value)
+  (case type
+    ((integer) (validate-integer value))
+    ((float) (validate-float value))
+    ((boolean) (validate-boolean value))
+    ((string) (validate-string value))
+    ((date) (validate-datetime value))
+    ((time) (validate-datetime value))
+    ((datetime) (validate-datetime value))
+    ((nref) (validate-string value)) 
+    ((rref) (validate-string value)) 
+    ((xref) (validate-string value))))
+
 (define (validate-string-type db/file type value)
   (let ((pattern (get-string-type db/file type)))
     (irregex-match pattern value)))
@@ -676,10 +710,75 @@
          (or (null? maxval)
              (<= value maxval))
          (or (null? step)
-             (
+             (integer?
+                (/ (or (and (null? minval) value)
+                       (- value minval)) step))))))
 
+(define (validate-vocab-type db/file type value)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db
+                 "EXISTS (SELECT id FROM vocab_types WHERE name=? AND term=?);")))
+        (= (query fetch-value st type value) 1)))))
 
-;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+(define (validate-union-type db/file utype subtype)
+  (do-query
+    db/file
+    (lambda (db)
+      (let ((st (sql/transient db
+                 "EXISTS (SELECT id FROM union_types WHERE name=? AND member_type=?);")))
+        (= (query fetch-value st utype subtype) 1)))))
+
+(define (validate-struct-member-cardinality card mlist)
+  (case (string->symbol card)
+    ((one) (= (length mlist) 1))
+    ((zoo) (<= (length mlist) 1))
+    ((ooma) (>= (length mlist) 1))
+    ((zoma) #t)
+    (else (eprintf "Unrecognized value for cardinality: ~A" card))))
+
+(define (validate-struct-member memspec value)
+  (let* ((rel-name (car memspec))
+         (cardinality (cadr memspec))
+         (mem-type (caddr memspec))
+         (members 
+           (filter
+             (lambda (item)
+               (equal? (alist-ref 'rel-name item) rel-name))
+             value)))
+    (and (validate-struct-member-cardinality cardinality members)
+         (every (lambda (mem) (validate mem-type mem)) members))))
+
+(define (no-unspecified-members? memspecs value)
+  (let ((known-rel-names (map car memspecs)))
+    (every (lambda (mem) (member (alist-ref 'rel-name mem) known-rel-names)))))
+
+(define (validate-struct-type db/file type value)
+  (let* ((typespec (get-struct-type db/file type))
+         (extensible (car typespec))
+         (memspecs (cadr typespec)))
+    (and (every (lambda (ms) (validate-struct-member ms value)) memspecs)
+         (or extensible
+             (no-unspecified-members? memspecs value)))))
+              
+(define (validate db/file type value)
+  (if (primitive? type)
+    (validate-primitive-type type value)
+    (do-query
+      db/file
+      (lambda (db)
+        (let ((cls (get-type-class db type)))
+          (case (string->symbol cls)
+            ((string) (validate-string-type db type value))
+            ((number) (validate-number-type db type value))
+            ((vocab) (validate-vocab-type db type value))
+            ((union) (validate-union-type db type value))
+            ((struct) (validate-struct-type db type value))
+            ((*) #t)
+            (else (eprintf "Unknown datatype: '~A'" type))))))))
+
+;;; OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO  
 
 ) ; END MODULE
 
