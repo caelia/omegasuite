@@ -6,6 +6,105 @@
   <head>
     <title>Rel8r Demo: gtd-plus</title>
     <link rel="stylesheet" type="text/css" href="/styles/main.css" />
+    <script type="text/javascript" src="/scripts/jquery-1.11.0.min.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.core.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.button.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.mouse.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.draggable.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.position.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.resizable.js"></script>
+ 	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.dialog.js"></script>
+    <script type="text/javascript">
+      function showItemBox(expanded, sub_funs) {
+      }
+      function showToDo() {
+        alert("showToDo");
+      }
+      function showCalendar() {
+        alert("showCalendar");
+      }
+      function showProjects() {
+        alert("showProjects");
+      }
+      function showContacts() {
+        alert("showContacts");
+      }
+      function showIdeas() {
+        alert("showIdeas");
+      }
+      function showNotes() {
+        alert("showNotes");
+      }
+      function showOverview() {
+        alert("showOverview");
+      }
+      function newAction() {
+        alert("newAction");
+      }
+      function newEvent() {
+        alert("newEvent");
+      }
+      function newAppointment() {
+        alert("newAppointment");
+      }
+      function newProject() {
+        alert("newProject");
+      }
+      function newContact() {
+        alert("newContact");
+      }
+      function newIdea() {
+        alert("newIdea");
+      }
+      function newNote() {
+        alert("newNote");
+      }
+      var test_projects = [{
+        "%TYPE": "project",
+        "%ID": "breed-mutant-seahorses",
+        "%LABEL": "title",
+        "title": "Breed Mutant Seahorses",
+        "deadline": "2014-03-28T17:00:00",
+        "contact": "jane-morgan",
+        "step": ["build-tank", "catch-seahorses", "assign-to-tanks"] 
+      }];
+      var test_actions = [{
+        "%TYPE": "action",
+        "%ID": "build-tank",
+        "%LABEL": "content",
+        "content": "Build tank for seahorses",
+        "context": ["lab"] 
+      },
+      {
+        "%TYPE": "action",
+        "%ID": "catch-seahorses",
+        "%LABEL": "content",
+        "content": "Catch us some seahorses",
+        "context": ["atlantic","pacific","indian"] 
+      },
+      {
+        "%TYPE": "action",
+        "%ID": "assign-to-tanks",
+        "%LABEL": "content",
+        "content": "Put 'em in da tanks",
+        "context": ["lab"] 
+      }];
+      var test_persons = [{
+        "%TYPE": "person",
+        "%ID": "jane-morgan",
+        "%LABEL": "given-name & surname",
+        "given-name": "Jane",
+        "surname": "Morgan",
+        "email": ["jane-morgan-work-email"] 
+      }];
+      var email_test_data = [{
+        "%TYPE": "email-address",
+        "%ID": "jane-morgan-work-email",
+        "label": "Work",
+        "address": "dr.jane.v.morgan@sea-creature-research.com" 
+      }];
+    </script>
   </head>
   <body>
     <div id="header">
