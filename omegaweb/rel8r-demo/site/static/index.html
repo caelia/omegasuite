@@ -16,28 +16,51 @@
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.resizable.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.dialog.js"></script>
     <script type="text/javascript">
+      function getLabel(obj) {
+        var label = "";
+        if (obj.hasOwnProperty("%LABEL")) {
+          var labelspec = obj["%LABEL"];
+          var parts = labelspec.split("&");
+          for (var i = 0; i < parts.length; i++) {
+            var part = obj[parts[i].trim()];
+            label += (" " + part);
+          }
+          label = label.trim();
+        } else if (obj.hasOwnProperty("label")) {
+          label = obj["label"];
+        } else {
+          label = obj["%TYPE"];
+        }
+        return label;
+      }
       function showItemBox(expanded, sub_funs) {
       }
       function showToDo() {
-        alert("showToDo");
+        $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#toDoSpace" ).removeClass("Hidden");
       }
       function showCalendar() {
-        alert("showCalendar");
+        $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#calendarSpace" ).removeClass("Hidden");
       }
       function showProjects() {
-        alert("showProjects");
+        $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#projectSpace" ).removeClass("Hidden");
       }
       function showContacts() {
-        alert("showContacts");
+        $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#contactSpace" ).removeClass("Hidden");
       }
       function showIdeas() {
-        alert("showIdeas");
+        $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#ideaSpace" ).removeClass("Hidden");
       }
       function showNotes() {
-        alert("showNotes");
+        $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#noteSpace" ).removeClass("Hidden");
       }
       function showOverview() {
-        alert("showOverview");
+        $( ".DisplaySpace" ).removeClass("Hidden");
       }
       function newAction() {
         alert("newAction");
@@ -140,7 +163,30 @@
         </div>
       </div>
       <div id="main_display">
-        &#xA0;
+        <div id="toDoSpace" class="DisplaySpace">
+          <h3>TO DO</h3>
+          &#xA0;
+        </div>
+        <div id="calendarSpace" class="DisplaySpace">
+          <h3>CALENDAR</h3>
+          &#xA0;
+        </div>
+        <div id="projectSpace" class="DisplaySpace">
+          <h3>PROJECTS</h3>
+          &#xA0;
+        </div>
+        <div id="contactSpace" class="DisplaySpace">
+          <h3>CONTACTS</h3>
+          &#xA0;
+        </div>
+        <div id="ideaSpace" class="DisplaySpace">
+          <h3>IDEAS</h3>
+          &#xA0;
+        </div>
+        <div id="noteSpace" class="DisplaySpace">
+          <h3>NOTES</h3>
+          &#xA0;
+        </div>
       </div>
     </div>
     <div id="footer">

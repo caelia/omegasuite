@@ -67,3 +67,11 @@
 #quick_menu a:hover {
   background-color: #900090;
 }
+div.DisplaySpace {
+  display: inline-block;
+  font-size: 96%;
+  padding: .2em 2em;
+}
+div.DisplaySpace.Hidden {
+  display: none;
+}
