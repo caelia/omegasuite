@@ -16,51 +16,101 @@
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.resizable.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.dialog.js"></script>
     <script type="text/javascript">
-      function getLabel(obj) {
-        var label = "";
-        if (obj.hasOwnProperty("%LABEL")) {
-          var labelspec = obj["%LABEL"];
-          var parts = labelspec.split("&");
-          for (var i = 0; i < parts.length; i++) {
-            var part = obj[parts[i].trim()];
-            label += (" " + part);
-          }
-          label = label.trim();
-        } else if (obj.hasOwnProperty("label")) {
-          label = obj["label"];
-        } else {
-          label = obj["%TYPE"];
+      var display_specs = {
+        "project": {
+          "label": "title"
         }
-        return label;
       }
-      function showItemBox(expanded, sub_funs) {
+      function getLabel(data, label_spec) {
+        var label = "";
+        var parts = label_spec.split("&");
+        for (var i = 0; i < parts.length; i++) {
+          var part = data[parts[i].trim()];
+          label += (" " + part);
+        }
+        return label.trim();
+      }
+      function required(display_spec, fieldname) {
+        return (display_spec.required.indexOf(fieldname)) != -1;
+      }
+      function showItemBox(item) {
+        var parent_box = null;
+        var item_type = item["%TYPE"];
+        var display_spec = display_specs[item_type];
+        var label = getLabel(item, display_spec.label); 
+        var box_id = item_type + "-" + item["%ID"] + "-box"; 
+        switch (item["%TYPE"]) {
+          case "action":
+            parent_box = $("#toDoSpace");
+            break;
+          case "project":
+            parent_box = $("#projectSpace");
+            break;
+          case "person":
+            parent_box = $("#contactSpace");
+            break;
+          case "event":
+            parent_box = $("#calendarSpace");
+            break;
+          case "appointment":
+            parent_box = $("#calendarSpace");
+            break;
+          case "idea":
+            parent_box = $("#ideaSpace");
+            break;
+          case "note":
+            parent_box = $("#noteSpace");
+            break;
+        }
+        parent_box.append("<div class='ItemBox'>Hi!</div>", { id: box_id });
       }
       function showToDo() {
         $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#main_display" ).removeClass("Overview");
         $( "#toDoSpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#toDoTab" ).addClass("Selected");
       }
       function showCalendar() {
         $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#main_display" ).removeClass("Overview");
         $( "#calendarSpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#calendarTab" ).addClass("Selected");
       }
       function showProjects() {
         $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#main_display" ).removeClass("Overview");
         $( "#projectSpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#projectTab" ).addClass("Selected");
       }
       function showContacts() {
         $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#main_display" ).removeClass("Overview");
         $( "#contactSpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#selectedTab" ).addClass("Selected");
       }
       function showIdeas() {
         $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#main_display" ).removeClass("Overview");
         $( "#ideaSpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#ideaTab" ).addClass("Selected");
       }
       function showNotes() {
         $( ".DisplaySpace" ).addClass("Hidden");
+        $( "#main_display" ).removeClass("Overview");
         $( "#noteSpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#noteTab" ).addClass("Selected");
       }
       function showOverview() {
+        $( "#main_display" ).addClass("Overview");
         $( ".DisplaySpace" ).removeClass("Hidden");
+        $( "#top_nav a" ).removeClass("Selected");
+        $( "#overviewTab" ).addClass("Selected");
       }
       function newAction() {
         alert("newAction");
@@ -121,12 +171,17 @@
         "surname": "Morgan",
         "email": ["jane-morgan-work-email"] 
       }];
-      var email_test_data = [{
+      var test_emails = [{
         "%TYPE": "email-address",
         "%ID": "jane-morgan-work-email",
         "label": "Work",
         "address": "dr.jane.v.morgan@sea-creature-research.com" 
       }];
+      
+      $( document ).ready( function() {
+        showOverview();
+        showItemBox(test_projects[0]);
+      });
     </script>
   </head>
   <body>
@@ -139,13 +194,13 @@
           demo/gtd-plus
         </div>
         <div id="top_nav">
-          <a href="#" onclick="showOverview();">Overview</a><!--
-          --><a href="#" onclick="showToDo();">ToDo</a><!--
-          --><a href="#" onclick="showCalendar();">Calendar</a><!--
-          --><a href="#" onclick="showProjects();">Projects</a><!--
-          --><a href="#" onclick="showContacts();">Contacts</a><!--
-          --><a href="#" onclick="showIdeas();">Ideas</a><!--
-          --><a href="#" onclick="showNotes();">Notes</a>
+          <a id="overviewTab" class="displayTab" href="#" onclick="showOverview();">Overview</a><!--
+          --><a id="toDoTab" class="displayTab" href="#" onclick="showToDo();">ToDo</a><!--
+          --><a id="calendarTab" class="displayTab" href="#" onclick="showCalendar();">Calendar</a><!--
+          --><a id="projectTab" class="displayTab" href="#" onclick="showProjects();">Projects</a><!--
+          --><a id="contactTab" class="displayTab" href="#" onclick="showContacts();">Contacts</a><!--
+          --><a id="ideaTab" class="displayTab" href="#" onclick="showIdeas();">Ideas</a><!--
+          --><a id="noteTab" class="displayTab" href="#" onclick="showNotes();">Notes</a>
         </div>
       </div>
     </div>

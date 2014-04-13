@@ -34,10 +34,13 @@
   display: inline;
   padding: .6em 1.2em;
   background-color: #800000;
-  color: #ffffff;
+  color: #ff9f9f;
   text-decoration: none;
   font-size: 120%;
   font-weight: bold;
+}
+#top_nav a.Selected {
+  color: #ffffff;
 }
 #top_nav a:hover {
   background-color: #b00000;
@@ -71,6 +74,9 @@ div.DisplaySpace {
   display: inline-block;
   font-size: 96%;
   padding: .2em 2em;
+}
+div.Overview div.DisplaySpace {
+  font-size: 80%;
 }
 div.DisplaySpace.Hidden {
   display: none;
