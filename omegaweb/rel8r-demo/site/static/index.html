@@ -34,35 +34,36 @@
         return (display_spec.required.indexOf(fieldname)) != -1;
       }
       function showItemBox(item) {
-        var parent_box = null;
+        var parent_sel = "";
         var item_type = item["%TYPE"];
         var display_spec = display_specs[item_type];
         var label = getLabel(item, display_spec.label); 
         var box_id = item_type + "-" + item["%ID"] + "-box"; 
         switch (item["%TYPE"]) {
           case "action":
-            parent_box = $("#toDoSpace");
+            parent_sel = "#toDoSpace";
             break;
           case "project":
-            parent_box = $("#projectSpace");
+            parent_sel = "#projectSpace";
             break;
           case "person":
-            parent_box = $("#contactSpace");
+            parent_sel = "#contactSpace";
             break;
           case "event":
-            parent_box = $("#calendarSpace");
+            parent_sel = "#calendarSpace";
             break;
           case "appointment":
-            parent_box = $("#calendarSpace");
+            parent_sel = "#calendarSpace";
             break;
           case "idea":
-            parent_box = $("#ideaSpace");
+            parent_sel = "#ideaSpace";
             break;
           case "note":
-            parent_box = $("#noteSpace");
+            parent_sel = "#noteSpace";
             break;
         }
-        parent_box.append("<div class='ItemBox'>Hi!</div>", { id: box_id });
+        // $( parent_sel ).append("<div class='ItemBox'>Hi!</div>", { id: box_id });
+        $("<div class='ItemBox'>Hi!</div>").attr("id", box_id).appendTo( parent_sel );
       }
       function showToDo() {
         $( ".DisplaySpace" ).addClass("Hidden");

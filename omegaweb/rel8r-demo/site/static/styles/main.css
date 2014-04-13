@@ -81,3 +81,8 @@ div.Overview div.DisplaySpace {
 div.DisplaySpace.Hidden {
   display: none;
 }
+div.ItemBox {
+  background-color: #ffffff;
+  border: 1px solid #600060;
+  padding: .2em;
+}
