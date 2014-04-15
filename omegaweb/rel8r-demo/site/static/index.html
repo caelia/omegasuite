@@ -18,77 +18,36 @@
     <script type="text/javascript">
       var display_specs = {
         "project": {
-          "label": "title",
-          "fields": [{
-            "name": "description",
-            "label": "Description",
-            "cardinality": "zoo",
-            "multiline": true
-          }, {
-            "name": "deadline",
-            "label": "Deadline",
-            "cardinality": "zoo"
-          }, {
-            "name": "contact",
-            "label": "Contacts",
-            "cardinality": "zoma",
-            "link": "nref"
-          }, {
-            "name": "step",
-            "label": "Steps",
-            "cardinality": "zoma",
-            "link": "nref"
-          }]
+          "label": "title"
         },
         "action": {
-          "label": "content",
-          "fields": [{
-            "name": "context",
-            "label": "Context",
-            "cardinality": "zoma"
-          }]
+          "label": "content"
         },
         "person": {
-          "label": "given-name & surname",
-          "fields": [{
-            "name": "email",
-            "label": "Email Addresses",
-            "cardinality": "zoma",
-            "display": "subform"
-          }, {
-            "name": "phone",
-            "label": "Phone Nos.",
-            "cardinality": "zoma",
-            "display": "subform"
-          }]
+          "label": "given-name & surname"
+        },
+        "email-address": {
+          "label": "label"
         }
       };
-      var test_emails = [{
-        "%TYPE": "email-address",
-        "%ID": "jane-morgan-work-email",
-        "label": "Work",
-        "address": "dr.jane.v.morgan@sea-creature-research.com" 
-      }];
-      }
-      function getLabel(data, label_spec) {
+
+      function getLabel(item, item_type) {
         var label = "";
-        var parts = label_spec.split("&");
-        for (var i = 0; i < parts.length; i++) {
-          var part = data[parts[i].trim()];
-          label += (" " + part);
+        var label_spec = display_specs.item_type.label;
+        var segments = label_spec.split("&");
+        for (var i = 0; i < segments.length; i++) {
+          var segment = data[segments[i].trim()];
+          label += (" " + segment);
         }
         return label.trim();
       }
-      function required(display_spec, fieldname) {
-        return (display_spec.required.indexOf(fieldname)) != -1;
-      }
+
       function showItemBox(item) {
         var parent_sel = "";
         var item_type = item["%TYPE"];
-        var display_spec = display_specs[item_type];
-        var label = getLabel(item, display_spec.label); 
+        var label = getLabel(item, item_type); 
         var box_id = item_type + "-" + item["%ID"] + "-box"; 
-        switch (item["%TYPE"]) {
+        switch item_type {
           case "action":
             parent_sel = "#toDoSpace";
             break;
@@ -113,6 +72,8 @@
         }
         // $( parent_sel ).append("<div class='ItemBox'>Hi!</div>", { id: box_id });
         $("<div class='ItemBox'>Hi!</div>").attr("id", box_id).appendTo( parent_sel );
+      }
+      function showProjectBox(data) {
       }
       function showToDo() {
         $( ".DisplaySpace" ).addClass("Hidden");
