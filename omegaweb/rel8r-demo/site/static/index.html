@@ -18,8 +18,57 @@
     <script type="text/javascript">
       var display_specs = {
         "project": {
-          "label": "title"
+          "label": "title",
+          "fields": [{
+            "name": "description",
+            "label": "Description",
+            "cardinality": "zoo",
+            "multiline": true
+          }, {
+            "name": "deadline",
+            "label": "Deadline",
+            "cardinality": "zoo"
+          }, {
+            "name": "contact",
+            "label": "Contacts",
+            "cardinality": "zoma",
+            "link": "nref"
+          }, {
+            "name": "step",
+            "label": "Steps",
+            "cardinality": "zoma",
+            "link": "nref"
+          }]
+        },
+        "action": {
+          "label": "content",
+          "fields": [{
+            "name": "context",
+            "label": "Context",
+            "cardinality": "zoma"
+          }]
+        },
+        "person": {
+          "label": "given-name & surname",
+          "fields": [{
+            "name": "email",
+            "label": "Email Addresses",
+            "cardinality": "zoma",
+            "display": "subform"
+          }, {
+            "name": "phone",
+            "label": "Phone Nos.",
+            "cardinality": "zoma",
+            "display": "subform"
+          }]
         }
+      };
+      var test_emails = [{
+        "%TYPE": "email-address",
+        "%ID": "jane-morgan-work-email",
+        "label": "Work",
+        "address": "dr.jane.v.morgan@sea-creature-research.com" 
+      }];
       }
       function getLabel(data, label_spec) {
         var label = "";
