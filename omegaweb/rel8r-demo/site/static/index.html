@@ -33,48 +33,92 @@
 
       function getLabel(item, item_type) {
         var label = "";
-        var label_spec = display_specs.item_type.label;
+        var label_spec = display_specs[item_type]["label"];
         var segments = label_spec.split("&");
         for (var i = 0; i < segments.length; i++) {
-          var segment = data[segments[i].trim()];
+          var segment = item[segments[i].trim()];
           label += (" " + segment);
         }
         return label.trim();
       }
 
-      function showItemBox(item) {
-        var parent_sel = "";
-        var item_type = item["%TYPE"];
+      function showItemBox(item, item_type, parent_sel) {
         var label = getLabel(item, item_type); 
         var box_id = item_type + "-" + item["%ID"] + "-box"; 
-        switch item_type {
-          case "action":
-            parent_sel = "#toDoSpace";
-            break;
-          case "project":
-            parent_sel = "#projectSpace";
-            break;
-          case "person":
-            parent_sel = "#contactSpace";
-            break;
-          case "event":
-            parent_sel = "#calendarSpace";
-            break;
-          case "appointment":
-            parent_sel = "#calendarSpace";
-            break;
-          case "idea":
-            parent_sel = "#ideaSpace";
-            break;
-          case "note":
-            parent_sel = "#noteSpace";
-            break;
+        var item_box = $( parent_sel ).append( "<div class='ItemBox'></div>" );
+        $( item_box ).attr("id", box_id);
+        $( item_box ).append( "<h3 class='ItemLabel'>" + label + "</h3>" );
+        return item_box;
+      }
+      function addOneLineField(container, label, data) {
+        $( container ).append("<div></div>")
+          .append("<span class='FieldLabel'>" + label + ": </span>")
+          .append("<span class='FieldValue'>" + data + "</span>");
+      }
+      function addMultiLineField(container, label, data) {
+        $( container ).append("<div></div>")
+          .append("<p class='FieldLabel'>" + label + ": </p>");
+        for ( var i = 0; i < data.length; i++ ) {
+          $( container ).append("<span class='FieldValue'>" + data[i] + "</span>");
         }
-        // $( parent_sel ).append("<div class='ItemBox'>Hi!</div>", { id: box_id });
-        $("<div class='ItemBox'>Hi!</div>").attr("id", box_id).appendTo( parent_sel );
       }
-      function showProjectBox(data) {
+      function addMultiItemField(container, label, data) {
+        $( container ).append("<div></div>")
+          .append("<span class='FieldLabel'>" + label + ": </span>");
+        var field_container = $( container ).append("<span class='FieldValue'></span>");
+        for ( var i = 0; i < data.length; i++ ) {
+          var txt = $( field_container ).text(); 
+          if ( txt === "" ) { 
+            txt = data[i];
+          } else {
+            txt += ", " + data[i];
+          }
+          $( field_container ).text(txt);
+        }
       }
+      function showProjectBox(item) {
+        var item_box = showItemBox( item, "project", "#projectSpace" );
+        if ( item.hasOwnProperty("description") ) {
+          $( item_box ).append("<p class='ItemDescription'>" + item.description + "</p>");
+        }
+        if ( item.hasOwnProperty("deadline") ) {
+          addOneLineField( item_box, "Deadline", item.deadline );
+        }
+        if ( item.hasOwnProperty("contact") ) {
+          addMultiLineField( item_box, "Contacts", item.contacts );
+        }
+        if ( item.hasOwnProperty("step") ) {
+          addMultiLineField( item_box, "Steps", item.steps );
+        }
+      }
+      function showActionBox(item) {
+        var item_box = showItemBox( item, "action", "#toDoSpace" );
+        if ( item.hasOwnProperty("context") ) {
+          addMultiItemField( item_box, "Context", item.context );
+        }
+      }
+      function showEventBox(item) {
+        var item_box = showItemBox( item, "event", "#calendarSpace" );
+      }
+      function showAppointmentBox(item) {
+        var item_box = showItemBox( item, "appointment", "#calendarSpace" );
+      }
+      function showContactBox(item) {
+        var item_box = showItemBox( item, "contact", "#contactSpace" );
+        if ( item.hasOwnProperty("email") ) {
+          addMultiLineField(item, "Email Addresses", item.email);
+        }
+        if ( item.hasOwnProperty("phone") ) {
+          addMultiLineField(item, "Phone Numbers", item.phone);
+        }
+      }
+      function showIdeaBox(item) {
+        var item_box = showItemBox( item, "idea", "#ideaSpace" );
+      }
+      function showNoteBox(item) {
+        var item_box = showItemBox( item, "note", "#noteSpace" );
+      }
+
       function showToDo() {
         $( ".DisplaySpace" ).addClass("Hidden");
         $( "#main_display" ).removeClass("Overview");
@@ -150,8 +194,8 @@
         "%LABEL": "title",
         "title": "Breed Mutant Seahorses",
         "deadline": "2014-03-28T17:00:00",
-        "contact": "jane-morgan",
-        "step": ["build-tank", "catch-seahorses", "assign-to-tanks"] 
+        "contacts": "jane-morgan",
+        "steps": ["build-tank", "catch-seahorses", "assign-to-tanks"] 
       }];
       var test_actions = [{
         "%TYPE": "action",
@@ -191,7 +235,7 @@
       
       $( document ).ready( function() {
         showOverview();
-        showItemBox(test_projects[0]);
+        showProjectBox(test_projects[0]);
       });
     </script>
   </head>
