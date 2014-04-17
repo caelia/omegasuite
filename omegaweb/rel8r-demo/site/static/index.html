@@ -16,6 +16,11 @@
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.resizable.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.dialog.js"></script>
     <script type="text/javascript">
+      function isArray(value) {
+        return value &&
+          typeof value === 'object' &&
+          value.constructor === Array;
+      }
       var display_specs = {
         "project": {
           "label": "title"
@@ -45,35 +50,45 @@
       function showItemBox(item, item_type, parent_sel) {
         var label = getLabel(item, item_type); 
         var box_id = item_type + "-" + item["%ID"] + "-box"; 
-        var item_box = $( parent_sel ).append( "<div class='ItemBox'></div>" );
+        var item_box = $( "<div class='ItemBox'></div>" );
+        $( parent_sel ).append( item_box );
         $( item_box ).attr("id", box_id);
         $( item_box ).append( "<h3 class='ItemLabel'>" + label + "</h3>" );
         return item_box;
       }
       function addOneLineField(container, label, data) {
-        $( container ).append("<div></div>")
+        $( "<div></div>" ).appendTo( container )
           .append("<span class='FieldLabel'>" + label + ": </span>")
           .append("<span class='FieldValue'>" + data + "</span>");
       }
       function addMultiLineField(container, label, data) {
-        $( container ).append("<div></div>")
+        var field_div = $( "<div></div>" ).appendTo( container )
           .append("<p class='FieldLabel'>" + label + ": </p>");
-        for ( var i = 0; i < data.length; i++ ) {
-          $( container ).append("<span class='FieldValue'>" + data[i] + "</span>");
+        if ( isArray(data) ) {
+          for ( var i = 0; i < data.length; i++ ) {
+            $( field_div ).append("<div class='FieldValue'>" + data[i] + "</div>");
+          }
+        } else {
+          $( field_div ).append("<div class='FieldValue'>" + data + "</div>");
         }
       }
       function addMultiItemField(container, label, data) {
-        $( container ).append("<div></div>")
+        var field_div = $( "<div></div>" ).appendTo( container )
           .append("<span class='FieldLabel'>" + label + ": </span>");
-        var field_container = $( container ).append("<span class='FieldValue'></span>");
-        for ( var i = 0; i < data.length; i++ ) {
-          var txt = $( field_container ).text(); 
-          if ( txt === "" ) { 
-            txt = data[i];
-          } else {
-            txt += ", " + data[i];
+        var value_span = $( "<span class='FieldValue'></span>" );
+        $( value_span ).appendTo( field_div );
+        if ( isArray(data) ) {
+          for ( var i = 0; i < data.length; i++ ) {
+            var txt = $( value_span ).text(); 
+            if ( txt === "" ) { 
+              txt = data[i];
+            } else {
+              txt += ", " + data[i];
+            }
+            $( value_span ).text(txt);
           }
-          $( field_container ).text(txt);
+        } else {
+          $( value_span ).text( data );
         }
       }
       function showProjectBox(item) {
@@ -84,10 +99,10 @@
         if ( item.hasOwnProperty("deadline") ) {
           addOneLineField( item_box, "Deadline", item.deadline );
         }
-        if ( item.hasOwnProperty("contact") ) {
+        if ( item.hasOwnProperty("contacts") ) {
           addMultiLineField( item_box, "Contacts", item.contacts );
         }
-        if ( item.hasOwnProperty("step") ) {
+        if ( item.hasOwnProperty("steps") ) {
           addMultiLineField( item_box, "Steps", item.steps );
         }
       }

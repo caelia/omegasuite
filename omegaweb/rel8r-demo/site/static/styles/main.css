@@ -72,6 +72,7 @@
 }
 div.DisplaySpace {
   display: inline-block;
+  vertical-align: top;
   font-size: 96%;
   padding: .2em 2em;
 }
