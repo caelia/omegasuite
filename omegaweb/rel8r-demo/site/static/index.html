@@ -6,7 +6,8 @@
   <head>
     <title>Rel8r Demo: gtd-plus</title>
     <link rel="stylesheet" type="text/css" href="/styles/main.css" />
-    <script type="text/javascript" src="/scripts/jquery-1.11.0.min.js"></script>
+    <!-- <script type="text/javascript" src="/scripts/jquery-1.11.0.min.js"></script> -->
+    <script type="text/javascript" src="/scripts/jquery-1.11.0.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.core.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.button.js"></script>
@@ -16,11 +17,6 @@
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.resizable.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.dialog.js"></script>
     <script type="text/javascript">
-      function isArray(value) {
-        return value &&
-          typeof value === 'object' &&
-          value.constructor === Array;
-      }
       var display_specs = {
         "project": {
           "label": "title"
@@ -35,7 +31,33 @@
           "label": "label"
         }
       };
+      var items = {};
 
+      function loadItem(item, replace) {
+        var item_id = item["%ID"];
+        if ( items.hasOwnProperty(item_id) && !replace ) {
+          throw ("Item '" + item_id + "' already exists.");
+        }
+        items[item_id] = item;
+      }
+      function unloadItem(item_id) {
+        delete items[item_id];
+      }
+      function getItemsByType(type) {
+        var result = [];
+        for (var i in items) {
+          var item = items[i];
+          if (item["%TYPE"] === type) {
+            result.push(item);
+          }
+        }
+        return result;
+      }
+      function isArray(value) {
+        return value &&
+          typeof value === 'object' &&
+          value.constructor === Array;
+      }
       function getLabel(item, item_type) {
         var label = "";
         var label_spec = display_specs[item_type]["label"];
@@ -47,11 +69,18 @@
         return label.trim();
       }
 
-      function showItemBox(item, item_type, parent_sel) {
+      function showItemBox(item, item_type, parent_sel, is_subitem) {
+        var klass = null;
+        if ( is_subitem ) {
+          klass = "SubItemBox";
+        } else {
+          klass = "ItemBox";
+        }
         var label = getLabel(item, item_type); 
         var box_id = item_type + "-" + item["%ID"] + "-box"; 
-        var item_box = $( "<div class='ItemBox'></div>" );
+        var item_box = $( "<div></div>" );
         $( parent_sel ).append( item_box );
+        $( item_box ).addClass( klass );
         $( item_box ).attr("id", box_id);
         $( item_box ).append( "<h3 class='ItemLabel'>" + label + "</h3>" );
         return item_box;
@@ -119,12 +148,12 @@
         var item_box = showItemBox( item, "appointment", "#calendarSpace" );
       }
       function showContactBox(item) {
-        var item_box = showItemBox( item, "contact", "#contactSpace" );
+        var item_box = showItemBox( item, "person", "#contactSpace" );
         if ( item.hasOwnProperty("email") ) {
-          addMultiLineField(item, "Email Addresses", item.email);
+          addMultiLineField(item_box, "Email Addresses", item.email);
         }
         if ( item.hasOwnProperty("phone") ) {
-          addMultiLineField(item, "Phone Numbers", item.phone);
+          addMultiLineField(item_box, "Phone Numbers", item.phone);
         }
       }
       function showIdeaBox(item) {
@@ -248,9 +277,16 @@
         "address": "dr.jane.v.morgan@sea-creature-research.com" 
       }];
       
+      function loadTestItems() {
+      }
+      
       $( document ).ready( function() {
         showOverview();
         showProjectBox(test_projects[0]);
+        showContactBox(test_persons[0]);
+        for ( var i = 0; i < test_actions.length; i++ ) {
+          showActionBox( test_actions[i] );
+        }
       });
     </script>
   </head>
