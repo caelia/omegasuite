@@ -5,9 +5,11 @@
 #header, #main_region {
   padding: 0;
 }
+/*
 #logobox, #header_main, #sub_nav, #main_display {
   display: inline-block;
 }
+*/
 #header {
   margin-bottom: .4em;
 }
@@ -51,7 +53,7 @@
 #main_display {
   background: #ffdddd;
   border: inset 1px;
-  height: 100%;
+  /* height: 100%; */
   vertical-align: top;
 }
 #local_menu a, #quick_menu a {
@@ -86,4 +88,11 @@ div.ItemBox {
   background-color: #ffffff;
   border: 1px solid #600060;
   padding: .2em;
+  margin-bottom: .2em;
+}
+#ancestorSpace *, #descendantSpace * {
+  color: #909090;
+}
+#ancestorSpace div.ItemBox, #descendantSpace div.ItemBox {
+  border: 1px solid #a000a0;
 }

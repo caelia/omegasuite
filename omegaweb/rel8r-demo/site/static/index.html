@@ -43,6 +43,19 @@
       function unloadItem(item_id) {
         delete items[item_id];
       }
+      function getItemByID(id) {
+        var matched = items.filter(function(item) {
+          return item["%ID"] === id;
+        });
+        switch ( matched.length ) {
+          case 0:
+            return null;
+          case 1:
+            return matched[0];
+          default:
+            throw "Error: duplicate item IDs";
+        }
+      }
       function getItemsByType(type) {
         var result = [];
         for (var i in items) {
@@ -70,7 +83,7 @@
       }
 
       function showItemBox(item, item_type, parent_sel, is_subitem) {
-        var klass = null;
+        var klass;
         if ( is_subitem ) {
           klass = "SubItemBox";
         } else {
@@ -84,6 +97,25 @@
         $( item_box ).attr("id", box_id);
         $( item_box ).append( "<h3 class='ItemLabel'>" + label + "</h3>" );
         return item_box;
+      }
+      function showAsAncestor(item) {
+        var item_type = item["%TYPE"];
+        var parent_sel;
+        switch item_type {
+          case "project":
+            parent_sel = "#ancProjectSpace";
+            break;
+          case "appointment":
+            parent_sel = "#ancCalendarSpace";
+            break;
+          case "event":
+            parent_sel = "#ancCalendarSpace";
+            break;
+          default:
+            parent_sel = null;
+        }
+        if ( parent_sel ) {
+        }
       }
       function addOneLineField(container, label, data) {
         $( "<div></div>" ).appendTo( container )
@@ -207,7 +239,7 @@
       }
       function showOverview() {
         $( "#main_display" ).addClass("Overview");
-        $( ".DisplaySpace" ).removeClass("Hidden");
+        $( "#main_display > div.DisplaySpace" ).removeClass("Hidden");
         $( "#top_nav a" ).removeClass("Selected");
         $( "#overviewTab" ).addClass("Selected");
       }
@@ -291,65 +323,99 @@
     </script>
   </head>
   <body>
-    <div id="header">
-      <div id="logobox">
-        <img src="/images/oweb-logo80.png" alt="OmegaWeb" />
-      </div>
-      <div id="header_main">
-        <div id="page_title">
-          demo/gtd-plus
-        </div>
-        <div id="top_nav">
-          <a id="overviewTab" class="displayTab" href="#" onclick="showOverview();">Overview</a><!--
-          --><a id="toDoTab" class="displayTab" href="#" onclick="showToDo();">ToDo</a><!--
-          --><a id="calendarTab" class="displayTab" href="#" onclick="showCalendar();">Calendar</a><!--
-          --><a id="projectTab" class="displayTab" href="#" onclick="showProjects();">Projects</a><!--
-          --><a id="contactTab" class="displayTab" href="#" onclick="showContacts();">Contacts</a><!--
-          --><a id="ideaTab" class="displayTab" href="#" onclick="showIdeas();">Ideas</a><!--
-          --><a id="noteTab" class="displayTab" href="#" onclick="showNotes();">Notes</a>
-        </div>
-      </div>
-    </div>
-    <div id="main_region">
-      <div id="sub_nav">
-        <div id="local_menu"></div>
-        <div id="quick_menu">
-          <a href="#" onclick="newAction();">New Action</a>
-          <a href="#" onclick="newEvent();">New Event</a>
-          <a href="#" onclick="newAppointment();">New Appointment</a>
-          <a href="#" onclick="newProject();">New Project</a>
-          <a href="#" onclick="newContact();">New Contact</a>
-          <a href="#" onclick="newIdea();">New Idea</a>
-          <a href="#" onclick="newNote();">New Note</a>
-        </div>
-      </div>
-      <div id="main_display">
-        <div id="toDoSpace" class="DisplaySpace">
-          <h3>TO DO</h3>
-          &#xA0;
-        </div>
-        <div id="calendarSpace" class="DisplaySpace">
-          <h3>CALENDAR</h3>
-          &#xA0;
-        </div>
-        <div id="projectSpace" class="DisplaySpace">
-          <h3>PROJECTS</h3>
-          &#xA0;
-        </div>
-        <div id="contactSpace" class="DisplaySpace">
-          <h3>CONTACTS</h3>
-          &#xA0;
-        </div>
-        <div id="ideaSpace" class="DisplaySpace">
-          <h3>IDEAS</h3>
-          &#xA0;
-        </div>
-        <div id="noteSpace" class="DisplaySpace">
-          <h3>NOTES</h3>
-          &#xA0;
-        </div>
-      </div>
-    </div>
+    <table>
+      <tr>
+        <td id="logobox">
+          <img src="/images/oweb-logo80.png" alt="OmegaWeb" />
+        </td>
+        <td id="header_main">
+          <div id="page_title">
+            demo/gtd-plus
+          </div>
+          <div id="top_nav">
+            <a id="overviewTab" class="displayTab" href="#" onclick="showOverview();">Overview</a><!--
+            --><a id="toDoTab" class="displayTab" href="#" onclick="showToDo();">ToDo</a><!--
+            --><a id="calendarTab" class="displayTab" href="#" onclick="showCalendar();">Calendar</a><!--
+            --><a id="projectTab" class="displayTab" href="#" onclick="showProjects();">Projects</a><!--
+            --><a id="contactTab" class="displayTab" href="#" onclick="showContacts();">Contacts</a><!--
+            --><a id="ideaTab" class="displayTab" href="#" onclick="showIdeas();">Ideas</a><!--
+            --><a id="noteTab" class="displayTab" href="#" onclick="showNotes();">Notes</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td id="sub_nav">
+          <div id="local_menu"></div>
+          <div id="quick_menu">
+            <a href="#" onclick="newAction();">New Action</a>
+            <a href="#" onclick="newEvent();">New Event</a>
+            <a href="#" onclick="newAppointment();">New Appointment</a>
+            <a href="#" onclick="newProject();">New Project</a>
+            <a href="#" onclick="newContact();">New Contact</a>
+            <a href="#" onclick="newIdea();">New Idea</a>
+            <a href="#" onclick="newNote();">New Note</a>
+          </div>
+        </td>
+        <td id="main_display">
+          <div id="ancestorSpace" class="DisplaySpace Hidden">
+            <div id="ancProjectSpace" class="DisplaySpace Hidden">
+              <h3>PROJECTS</h3>
+              &#xA0;
+            </div>
+            <div id="ancCalendarSpace" class="DisplaySpace Hidden">
+              <h3>CALENDAR</h3>
+              &#xA0;
+            </div>
+          </div>
+          <div id="toDoSpace" class="DisplaySpace">
+            <h3>TO DO</h3>
+            &#xA0;
+          </div>
+          <div id="calendarSpace" class="DisplaySpace">
+            <h3>CALENDAR</h3>
+            &#xA0;
+          </div>
+          <div id="projectSpace" class="DisplaySpace">
+            <h3>PROJECTS</h3>
+            &#xA0;
+          </div>
+          <div id="contactSpace" class="DisplaySpace">
+            <h3>CONTACTS</h3>
+            &#xA0;
+          </div>
+          <div id="ideaSpace" class="DisplaySpace">
+            <h3>IDEAS</h3>
+            &#xA0;
+          </div>
+          <div id="noteSpace" class="DisplaySpace">
+            <h3>NOTES</h3>
+            &#xA0;
+          </div>
+          <div id="descendantSpace" class="DisplaySpace Hidden">
+            <div id="desToDoSpace" class="DisplaySpace Hidden">
+              <h3>TO DO</h3>
+              &#xA0;
+            </div>
+            <div id="desCalendarSpace" class="DisplaySpace Hidden">
+              <h3>CALENDAR</h3>
+              &#xA0;
+            </div>
+            <div id="desContactSpace" class="DisplaySpace Hidden">
+              <h3>CONTACTS</h3>
+              &#xA0;
+            </div>
+            <div id="desIdeaSpace" class="DisplaySpace Hidden">
+              <h3>IDEAS</h3>
+              &#xA0;
+            </div>
+            <div id="desNoteSpace" class="DisplaySpace Hidden">
+              <h3>NOTES</h3>
+              &#xA0;
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
     <div id="footer">
   
     </div>
