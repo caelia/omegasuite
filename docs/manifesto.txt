@@ -2,7 +2,7 @@ OmegaSuite: The Ultimate PIM
 ============================
 
 PIM? I hear you saying. As in Personal Information Manager? Who cares about
-those any more?
+those any more? Besides, the name has a sort of tinny quality to it.
 
 Well, I care, and if you don't, I'm going to try to change your mind here.
 Because this is a problem I've been thinking about, and occasionally working
@@ -102,6 +102,12 @@ deliberate, embellished one as a record of your thoughts. But in my opinion
 the best use of mind maps involves working very quickly--the recording
 technique needs to match the speed of your brain.
 
+This just doesn't happen with any of the mind-mapping applications I've
+seen. The problem is one of design, not implementation. Rather than focusing
+on the benefits only available in a digital environment, they attempt to
+replicate the experience of mind-mapping on paper--and in my opinion, fail
+miserably.
+
     It is a classic “catch 22.” The client wants something that is
     significantly superior to the competition. But if superior, it cannot be
     the same, so it must be different (typically the greater the
@@ -115,3 +121,60 @@ technique needs to match the speed of your brain.
     http://weblog.raganwald.com/2008/01/programming-language-cannot-be-better.html 
     accessed 3/18/2014
 
+The Key to a Better Type of PIM
+-------------------------------
+
+As mentioned above, I believe for a computerized PIM to achieve a compelling
+advantage over paper is to focus on the benefits that can only be achieved
+in a digital environment. The most important of these is the ability to
+flexibly relate disparate bits of information and to visualize their
+relationships. In so doing, we can make the computer an extension of the
+brain, and an effective support for a creative process, rather than simply a
+glorified recording device.
+
+4 Stages
+--------
+
+    1. Gather
+    2. Link
+    3. Transform
+    4. Produce
+
+Stages 1 and 4 are well-supported by current tools. For gathering
+information, we have browsers, search engines ... well, what more do we
+need? For producing information products, there is a seemingly limitless
+variety of tools available: Word, Photoshop, AutoCAD, CuBase ... you get the
+idea.
+
+The problem is that there are few tools that support the intermediate steps,
+and none that I know of that attempt to integrate all four stages into a
+seamless process.
+
+Mind Mapping
+------------
+
+The OmegaSuite mind map will not offer a lot of options visually. That's
+because it is intended to support a very fluent process. You enter various
+bits of information as they occur to you; you have the option of creating
+links as you go--if the relationships are clear from the beginning--or of
+creating links later as you review the data.
+
+Transformations: Mind Map to Outline
+------------------------------------
+
+When you are ready to put your information into a more hierarchical form,
+you will be able to open an outline pane; you can then select a node in your
+mind map and drag it into the outline, and related nodes will automatically
+be selected. However, since the related nodes could encompass the entire
+mind map and may include many things that you don't want in your outline,
+you will be prompted to include or exclude each node in turn.
+
+Transformations: Undated to Dated Events
+----------------------------------------
+
+Why is it that calendar events can't exist without a date and a time? Let's
+say you are planning a conference. You may very well have a rough idea of
+what the conference is about and what its contents will consist of long
+before you are able to nail down specific dates and times. OmegaSuite will
+enable you to create the event and its subevents initially without dates and
+times, and assign dates and times later.
