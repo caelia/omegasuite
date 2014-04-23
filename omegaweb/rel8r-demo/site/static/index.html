@@ -98,25 +98,6 @@
         $( item_box ).append( "<h3 class='ItemLabel'>" + label + "</h3>" );
         return item_box;
       }
-      function showAsAncestor(item) {
-        var item_type = item["%TYPE"];
-        var parent_sel;
-        switch item_type {
-          case "project":
-            parent_sel = "#ancProjectSpace";
-            break;
-          case "appointment":
-            parent_sel = "#ancCalendarSpace";
-            break;
-          case "event":
-            parent_sel = "#ancCalendarSpace";
-            break;
-          default:
-            parent_sel = null;
-        }
-        if ( parent_sel ) {
-        }
-      }
       function addOneLineField(container, label, data) {
         $( "<div></div>" ).appendTo( container )
           .append("<span class='FieldLabel'>" + label + ": </span>")
@@ -152,8 +133,11 @@
           $( value_span ).text( data );
         }
       }
-      function showProjectBox(item) {
-        var item_box = showItemBox( item, "project", "#projectSpace" );
+      function showProjectBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#projectSpace";
+        }
+        var item_box = showItemBox( item, "project", parent_sel );
         if ( item.hasOwnProperty("description") ) {
           $( item_box ).append("<p class='ItemDescription'>" + item.description + "</p>");
         }
@@ -167,20 +151,32 @@
           addMultiLineField( item_box, "Steps", item.steps );
         }
       }
-      function showActionBox(item) {
-        var item_box = showItemBox( item, "action", "#toDoSpace" );
+      function showActionBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#toDoSpace";
+        }
+        var item_box = showItemBox( item, "action", parent_sel );
         if ( item.hasOwnProperty("context") ) {
           addMultiItemField( item_box, "Context", item.context );
         }
       }
-      function showEventBox(item) {
-        var item_box = showItemBox( item, "event", "#calendarSpace" );
+      function showEventBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#calendarSpace";
+        }
+        var item_box = showItemBox( item, "event", parent_sel );
       }
-      function showAppointmentBox(item) {
-        var item_box = showItemBox( item, "appointment", "#calendarSpace" );
+      function showAppointmentBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#calendarSpace";
+        }
+        var item_box = showItemBox( item, "appointment", parent_sel );
       }
-      function showContactBox(item) {
-        var item_box = showItemBox( item, "person", "#contactSpace" );
+      function showContactBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#contactSpace";
+        }
+        var item_box = showItemBox( item, "person", parent_sel );
         if ( item.hasOwnProperty("email") ) {
           addMultiLineField(item_box, "Email Addresses", item.email);
         }
@@ -188,11 +184,36 @@
           addMultiLineField(item_box, "Phone Numbers", item.phone);
         }
       }
-      function showIdeaBox(item) {
-        var item_box = showItemBox( item, "idea", "#ideaSpace" );
+      function showIdeaBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#ideaSpace";
+        }
+        var item_box = showItemBox( item, "idea", parent_sel );
       }
-      function showNoteBox(item) {
-        var item_box = showItemBox( item, "note", "#noteSpace" );
+      function showNoteBox(item, parent_sel) {
+        if ( parent_sel === undefined ) {
+          parent_sel = "#noteSpace";
+        }
+        var item_box = showItemBox( item, "note", parent_sel );
+      }
+      function showAsAncestor(item) {
+        var item_type = item["%TYPE"];
+        var parent_sel;
+        switch ( item_type ) {
+          case "project":
+            parent_sel = "#ancProjectSpace";
+            break;
+          case "appointment":
+            parent_sel = "#ancCalendarSpace";
+            break;
+          case "event":
+            parent_sel = "#ancCalendarSpace";
+            break;
+          default:
+            parent_sel = null;
+        }
+        if ( parent_sel ) {
+        }
       }
 
       function showToDo() {
@@ -357,7 +378,7 @@
           </div>
         </td>
         <td id="main_display">
-          <div id="ancestorSpace" class="DisplaySpace Hidden">
+          <div id="ancestorFrame" class="DisplaySpace Hidden">
             <div id="ancProjectSpace" class="DisplaySpace Hidden">
               <h3>PROJECTS</h3>
               &#xA0;
@@ -391,7 +412,7 @@
             <h3>NOTES</h3>
             &#xA0;
           </div>
-          <div id="descendantSpace" class="DisplaySpace Hidden">
+          <div id="descendantFrame" class="DisplaySpace Hidden">
             <div id="desToDoSpace" class="DisplaySpace Hidden">
               <h3>TO DO</h3>
               &#xA0;
