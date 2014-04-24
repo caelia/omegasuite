@@ -49,6 +49,7 @@
 }
 #sub_nav {
   width: 160px;
+  vertical-align: top;
 }
 #main_display {
   background: #ffdddd;
@@ -109,6 +110,6 @@ div.ItemContent {
 #ancestorFrame div.ItemBox, #descendantFrame div.ItemBox {
   border: 1px solid #a000a0;
 }
-div.DisplaySpace.Hidden, div.ItemContent.Hidden, #ancestorFrame div.DisplaySpace, #descendantFrame div.DisplaySpace {
+div.DisplaySpace.Hidden, div.ItemContent.Hidden, #ancestorFrame div.DisplaySpace.Hidden, #descendantFrame div.DisplaySpace.Hidden {
   display: none;
 }

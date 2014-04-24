@@ -45,6 +45,7 @@
       function unloadItem(item_id) {
         delete items[item_id];
       }
+      /*
       function getItemByID(id) {
         var matched = items.filter(function(item) {
           return item["%ID"] === id;
@@ -58,6 +59,7 @@
             throw "Error: duplicate item IDs";
         }
       }
+      */
       function getItemsByType(type) {
         var result = [];
         for (var i in items) {
@@ -246,31 +248,38 @@
         $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
         $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
         $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+        $( "#descendantFrame" ).removeClass("Hidden");
         var contacts, steps;
         if ( item.hasOwnProperty("contacts") ) {
           var c;
           contacts = item["contacts"];
-          if ( isArray(contacts) ) {
-            for (var i = 0; i < contacts.length; i++ ) {
-              c = getItemById(contacts[i]);
+          if ( contacts ) {
+            if ( isArray(contacts) ) {
+              for (var i = 0; i < contacts.length; i++ ) {
+                c = items[contacts[i]];
+                showContactBox(c, "#desContactSpace" );
+              }
+            } else {
+              c = items[contacts];
               showContactBox(c, "#desContactSpace" );
             }
-          } else if ( contacts ) {
-            c = getItemById(contacts);
-            showContactBox(c, "#desContactSpace" );
+            $( "#desContactSpace" ).removeClass("Hidden");
           }
         }
         if ( item.hasOwnProperty("steps") ) {
           var s;
           steps = item["steps"];
-          if ( isArray(steps) ) {
-            for (var i = 0; i < steps.length; i++ ) {
-              s = getItemById(steps[i]);
+          if ( steps ) {
+            if ( isArray(steps) ) {
+              for (var i = 0; i < steps.length; i++ ) {
+                s = items[steps[i]];
+                showActionBox(s, "#desToDoSpace" );
+              }
+            } else {
+              s = items[steps];
               showActionBox(s, "#desToDoSpace" );
             }
-          } else if ( steps ) {
-            s = getItemById(steps);
-            showActionBox(s, "#desToDoSpace" );
+            $( "#desToDoSpace" ).removeClass("Hidden");
           }
         }
       }
@@ -416,10 +425,24 @@
           showActionBox( test_actions[i] );
         }
       }
-      
+      function showTestProject() {
+        function loadArray(arr) {
+          for ( var i = 0; i < arr.length; i++ ) { 
+            loadItem(arr[i]);
+          }
+        }
+        loadArray(test_projects);
+        loadArray(test_actions);
+        loadArray(test_persons);
+        loadArray(test_emails);
+        showProjects();
+        showProjectBox(test_projects[0]); 
+        showProjectRelated(test_projects[0]);
+      }
+
       // =========================================================================
       $( document ).ready( function() {
-        showTestOverview(); 
+        showTestProject(); 
       });
     </script>
   </head>
