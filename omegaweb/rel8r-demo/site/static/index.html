@@ -452,7 +452,7 @@
         <td id="logobox">
           <img src="/images/oweb-logo80.png" alt="OmegaWeb" />
         </td>
-        <td id="header_main">
+        <td id="header_main" colspan="3">
           <div id="page_title">
             demo/gtd-plus
           </div>
@@ -480,8 +480,10 @@
             <a href="#" onclick="newNote();">New Note</a>
           </div>
         </td>
-        <td id="main_display">
+        <!-- <td id="main_display">
           <div id="ancestorFrame" class="Hidden">
+          -->
+          <td id="ancestorFrame" class="Hidden">
             <div id="ancProjectSpace" class="DisplaySpace Hidden">
               <h3>PROJECTS</h3>
               &#xA0;
@@ -491,6 +493,8 @@
               &#xA0;
             </div>
           </div>
+          </td>
+          <td id="main_display">
           <div id="toDoSpace" class="DisplaySpace">
             <h3>TO DO</h3>
             &#xA0;
@@ -515,7 +519,9 @@
             <h3>NOTES</h3>
             &#xA0;
           </div>
-          <div id="descendantFrame" class="Hidden">
+          </td>
+          <td id="descendantFrame" class="Hidden">
+          <!-- <div id="descendantFrame" class="Hidden"> -->
             <div id="desToDoSpace" class="DisplaySpace Hidden">
               <h3>TO DO</h3>
               &#xA0;
@@ -536,7 +542,7 @@
               <h3>NOTES</h3>
               &#xA0;
             </div>
-          </div>
+          <!-- </div> -->
         </td>
       </tr>
     </table>

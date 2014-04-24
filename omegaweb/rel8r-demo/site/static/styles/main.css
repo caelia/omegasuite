@@ -101,6 +101,12 @@ div.ItemContent {
   padding:.2em;
   border-top: 1px dotted #878787;
 }
+#ancestorFrame, #descendantFrame {
+  display: table-cell;
+}
+#ancestorFrame.Hidden, #descendantFrame.Hidden {
+  display: none;
+}
 #ancestorFrame *, #descendantFrame * {
   color: #909090;
 }
