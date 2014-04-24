@@ -81,18 +81,34 @@ div.DisplaySpace {
 div.Overview div.DisplaySpace {
   font-size: 80%;
 }
-div.DisplaySpace.Hidden {
-  display: none;
-}
 div.ItemBox {
   background-color: #ffffff;
   border: 1px solid #600060;
-  padding: .2em;
-  margin-bottom: .2em;
+  margin: 2px;
 }
-#ancestorSpace *, #descendantSpace * {
+div.ItemBox.Current {
+  border: 2px solid #6000b0;
+  margin: 1px;
+}
+div.ItemBox.Current h3.ItemLabel {
+  background-color: #ffc0ff;
+}
+h3.ItemLabel {
+  padding: .2em;
+}
+div.ItemContent {
+  padding:.2em;
+  border-top: 1px dotted #878787;
+}
+#ancestorFrame *, #descendantFrame * {
   color: #909090;
 }
-#ancestorSpace div.ItemBox, #descendantSpace div.ItemBox {
+#ancestorFrame div.DisplaySpace, #descendantFrame div.DisplaySpace {
+  display: block;
+}
+#ancestorFrame div.ItemBox, #descendantFrame div.ItemBox {
   border: 1px solid #a000a0;
+}
+div.DisplaySpace.Hidden, div.ItemContent.Hidden, #ancestorFrame div.DisplaySpace, #descendantFrame div.DisplaySpace {
+  display: none;
 }

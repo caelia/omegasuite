@@ -17,6 +17,7 @@
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.resizable.js"></script>
  	  <script type="text/javascript" src="/scripts/jquery-ui-1.10.4/ui/jquery.ui.dialog.js"></script>
     <script type="text/javascript">
+      // =========================================================================
       var display_specs = {
         "project": {
           "label": "title"
@@ -33,6 +34,7 @@
       };
       var items = {};
 
+      // =========================================================================
       function loadItem(item, replace) {
         var item_id = item["%ID"];
         if ( items.hasOwnProperty(item_id) && !replace ) {
@@ -82,6 +84,16 @@
         return label.trim();
       }
 
+      // =========================================================================
+      function toggleItemContent(evt) {
+        $( evt.target ).siblings('.ItemContent').toggleClass('Hidden');
+      }
+      function focusItem(evt) {
+        $( evt.target ).closest('.ItemBox').addClass('Current');
+      }
+      function unfocusItem(evt) {
+        $( evt.target ).closest('.ItemBox').removeClass('Current');
+      }
       function showItemBox(item, item_type, parent_sel, is_subitem) {
         var klass;
         if ( is_subitem ) {
@@ -96,7 +108,13 @@
         $( item_box ).addClass( klass );
         $( item_box ).attr("id", box_id);
         $( item_box ).append( "<h3 class='ItemLabel'>" + label + "</h3>" );
-        return item_box;
+        $( item_box ).append( "<div class='ItemContent Hidden'></div>" );
+        $( item_box ).children('.ItemLabel').bind("click", toggleItemContent);
+        $( item_box ).children('.ItemLabel').bind("mouseenter", focusItem);
+        $( item_box ).bind("mouseenter", focusItem);
+        $( item_box ).children('.ItemLabel').bind("mouseleave", unfocusItem);
+        $( item_box ).bind("mouseleave", unfocusItem);
+        return box_id;
       }
       function addOneLineField(container, label, data) {
         $( "<div></div>" ).appendTo( container )
@@ -137,64 +155,71 @@
         if ( parent_sel === undefined ) {
           parent_sel = "#projectSpace";
         }
-        var item_box = showItemBox( item, "project", parent_sel );
+        var box_id = showItemBox( item, "project", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
         if ( item.hasOwnProperty("description") ) {
-          $( item_box ).append("<p class='ItemDescription'>" + item.description + "</p>");
+          $( item_cont_sel ).append("<p class='ItemDescription'>" + item.description + "</p>");
         }
         if ( item.hasOwnProperty("deadline") ) {
-          addOneLineField( item_box, "Deadline", item.deadline );
+          addOneLineField( item_cont_sel, "Deadline", item.deadline );
         }
         if ( item.hasOwnProperty("contacts") ) {
-          addMultiLineField( item_box, "Contacts", item.contacts );
+          addMultiLineField( item_cont_sel, "Contacts", item.contacts );
         }
         if ( item.hasOwnProperty("steps") ) {
-          addMultiLineField( item_box, "Steps", item.steps );
+          addMultiLineField( item_cont_sel, "Steps", item.steps );
         }
       }
       function showActionBox(item, parent_sel) {
         if ( parent_sel === undefined ) {
           parent_sel = "#toDoSpace";
         }
-        var item_box = showItemBox( item, "action", parent_sel );
+        var box_id = showItemBox( item, "action", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
         if ( item.hasOwnProperty("context") ) {
-          addMultiItemField( item_box, "Context", item.context );
+          addMultiItemField( item_cont_sel, "Context", item.context );
         }
       }
       function showEventBox(item, parent_sel) {
         if ( parent_sel === undefined ) {
           parent_sel = "#calendarSpace";
         }
-        var item_box = showItemBox( item, "event", parent_sel );
+        var box_id = showItemBox( item, "event", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
       }
       function showAppointmentBox(item, parent_sel) {
         if ( parent_sel === undefined ) {
           parent_sel = "#calendarSpace";
         }
-        var item_box = showItemBox( item, "appointment", parent_sel );
+        var box_id = showItemBox( item, "appointment", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
       }
       function showContactBox(item, parent_sel) {
         if ( parent_sel === undefined ) {
           parent_sel = "#contactSpace";
         }
-        var item_box = showItemBox( item, "person", parent_sel );
+        var box_id = showItemBox( item, "person", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
         if ( item.hasOwnProperty("email") ) {
-          addMultiLineField(item_box, "Email Addresses", item.email);
+          addMultiLineField(item_cont_sel, "Email Addresses", item.email);
         }
         if ( item.hasOwnProperty("phone") ) {
-          addMultiLineField(item_box, "Phone Numbers", item.phone);
+          addMultiLineField(item_cont_sel, "Phone Numbers", item.phone);
         }
       }
       function showIdeaBox(item, parent_sel) {
         if ( parent_sel === undefined ) {
           parent_sel = "#ideaSpace";
         }
-        var item_box = showItemBox( item, "idea", parent_sel );
+        var box_id = showItemBox( item, "idea", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
       }
       function showNoteBox(item, parent_sel) {
         if ( parent_sel === undefined ) {
           parent_sel = "#noteSpace";
         }
-        var item_box = showItemBox( item, "note", parent_sel );
+        var box_id = showItemBox( item, "note", parent_sel );
+        var item_cont_sel = "#" + box_id + " .ItemContent";
       }
       function showAsAncestor(item) {
         var item_type = item["%TYPE"];
@@ -216,6 +241,57 @@
         }
       }
 
+      // =========================================================================
+      function showProjectRelated(item) {
+        $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+        $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+        $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+        var contacts, steps;
+        if ( item.hasOwnProperty("contacts") ) {
+          var c;
+          contacts = item["contacts"];
+          if ( isArray(contacts) ) {
+            for (var i = 0; i < contacts.length; i++ ) {
+              c = getItemById(contacts[i]);
+              showContactBox(c, "#desContactSpace" );
+            }
+          } else if ( contacts ) {
+            c = getItemById(contacts);
+            showContactBox(c, "#desContactSpace" );
+          }
+        }
+        if ( item.hasOwnProperty("steps") ) {
+          var s;
+          steps = item["steps"];
+          if ( isArray(steps) ) {
+            for (var i = 0; i < steps.length; i++ ) {
+              s = getItemById(steps[i]);
+              showActionBox(s, "#desToDoSpace" );
+            }
+          } else if ( steps ) {
+            s = getItemById(steps);
+            showActionBox(s, "#desToDoSpace" );
+          }
+        }
+      }
+      function showActionRelated(item) {
+      }
+      function showContactRelated(item) {
+      }
+      function showEventRelated(item) {
+      }
+      function showAppointmentRelated(item) {
+      }
+      function showNoteRelated(item) {
+      }
+      function showIdeaRelated(item) {
+      }
+
+      // =========================================================================
+      function goToProject(evt) {
+      }
+
+      // =========================================================================
       function showToDo() {
         $( ".DisplaySpace" ).addClass("Hidden");
         $( "#main_display" ).removeClass("Overview");
@@ -264,6 +340,7 @@
         $( "#top_nav a" ).removeClass("Selected");
         $( "#overviewTab" ).addClass("Selected");
       }
+      // =========================================================================
       function newAction() {
         alert("newAction");
       }
@@ -285,6 +362,7 @@
       function newNote() {
         alert("newNote");
       }
+      // =========================================================================
       var test_projects = [{
         "%TYPE": "project",
         "%ID": "breed-mutant-seahorses",
@@ -330,16 +408,18 @@
         "address": "dr.jane.v.morgan@sea-creature-research.com" 
       }];
       
-      function loadTestItems() {
-      }
-      
-      $( document ).ready( function() {
+      function showTestOverview() {
         showOverview();
         showProjectBox(test_projects[0]);
         showContactBox(test_persons[0]);
         for ( var i = 0; i < test_actions.length; i++ ) {
           showActionBox( test_actions[i] );
         }
+      }
+      
+      // =========================================================================
+      $( document ).ready( function() {
+        showTestOverview(); 
       });
     </script>
   </head>
@@ -378,7 +458,7 @@
           </div>
         </td>
         <td id="main_display">
-          <div id="ancestorFrame" class="DisplaySpace Hidden">
+          <div id="ancestorFrame" class="Hidden">
             <div id="ancProjectSpace" class="DisplaySpace Hidden">
               <h3>PROJECTS</h3>
               &#xA0;
@@ -412,7 +492,7 @@
             <h3>NOTES</h3>
             &#xA0;
           </div>
-          <div id="descendantFrame" class="DisplaySpace Hidden">
+          <div id="descendantFrame" class="Hidden">
             <div id="desToDoSpace" class="DisplaySpace Hidden">
               <h3>TO DO</h3>
               &#xA0;
