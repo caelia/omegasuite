@@ -57,6 +57,9 @@
   /* height: 100%; */
   vertical-align: top;
 }
+#main_display {
+  padding: .7em .2em .5em .2em;
+}
 #local_menu a, #quick_menu a {
   display: block;  
   color: #ffffff;
