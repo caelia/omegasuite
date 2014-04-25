@@ -51,6 +51,23 @@ function getItemsByType(type) {
   }
   return result;
 }
+function getRelatedItems(type, relation, target_id) {
+  var matched = [];
+  var item;
+  var keys = getOwnPropertyNames(items);
+  for ( var i = 0; i < keys.length; i++ ) {
+    item = items[keys[i]];
+    if ( item["%TYPE"] === type ) {
+      matched += item;
+    }
+  }
+  if ( matched.length > 0 ) {
+    matched = matched.filter(function(elt) {
+      item[relation] === target_id;
+    });
+  }
+  return matched;
+}
 function isArray(value) {
   return value &&
     typeof value === 'object' &&
@@ -229,6 +246,7 @@ function showProjectRelated(item) {
   $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
   $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
   $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#ancestorFrame" ).addClass("Hidden");
   $( "#descendantFrame" ).removeClass("Hidden");
   var contacts, steps;
   if ( item.hasOwnProperty("contacts") ) {
@@ -265,16 +283,56 @@ function showProjectRelated(item) {
   }
 }
 function showActionRelated(item) {
+  $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+  $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame" ).addClass("Hidden");
+  $( "#ancestorFrame" ).removeClass("Hidden");
+  var projects = getRelatedItems("project", "step", item["%ID"]);
+  if ( projects.length > 0 ) {
+    for ( var i = 0; i < projects.length; i++ ) {
+      showProjectBox(projects[i], "#ancProjectSpace");
+    }
+    $( "#ancProjectSpace" ).removeClass("Hidden");
+  }
 }
 function showContactRelated(item) {
+  $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+  $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame" ).addClass("Hidden");
+  $( "#ancestorFrame" ).removeClass("Hidden");
+  var projects = getRelatedItems("project", "step", item["%ID"]);
+  if ( projects.length > 0 ) {
+    for ( var i = 0; i < projects.length; i++ ) {
+      showProjectBox(projects[i], "#ancProjectSpace");
+    }
+    $( "#ancProjectSpace" ).removeClass("Hidden");
+  }
 }
 function showEventRelated(item) {
+  $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+  $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame" ).removeClass("Hidden");
 }
 function showAppointmentRelated(item) {
+  $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+  $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame" ).removeClass("Hidden");
 }
 function showNoteRelated(item) {
+  $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+  $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame" ).removeClass("Hidden");
 }
 function showIdeaRelated(item) {
+  $( "#ancestorFrame, #descendantFrame" ).remove( ".ItemBox" );
+  $( "#ancestorFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame .DisplaySpace" ).addClass("Hidden");
+  $( "#descendantFrame" ).removeClass("Hidden");
 }
 
 // =========================================================================
