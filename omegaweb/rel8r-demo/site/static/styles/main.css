@@ -102,7 +102,7 @@ div.ItemContent {
   border-top: 1px dotted #878787;
 }
 #ancestorFrame, #descendantFrame {
-  display: table-cell;
+  display: inline-block;
 }
 #ancestorFrame.Hidden, #descendantFrame.Hidden {
   display: none;
@@ -112,7 +112,26 @@ div.ItemContent {
 }
 #ancestorFrame div.DisplaySpace, #descendantFrame div.DisplaySpace {
   display: block;
+  border-top: 1px dotted #800000;
+  padding-top: .2em;
+  margin-top: .7em;
 }
+#ancestorFrame div.DisplaySpace:first-child, #descendantFrame div.DisplaySpace:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+/*
+#ancestorFrame :first-child, #descendantFrame :first-child {
+  border-top: none;
+  margin-top: none;
+}
+*/
+/*
+div.DisplaySpace:first-child, div.DisplaySpace:first-child {
+  border-top: none;
+  margin-top: none;
+}
+*/
 #ancestorFrame div.ItemBox, #descendantFrame div.ItemBox {
   border: 1px solid #a000a0;
 }
