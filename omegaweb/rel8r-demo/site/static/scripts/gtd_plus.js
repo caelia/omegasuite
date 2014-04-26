@@ -54,7 +54,7 @@ function getItemsByType(type) {
 function getRelatedItems(type, relation, target_id) {
   var matched = [];
   var item;
-  var keys = getOwnPropertyNames(items);
+  var keys = Object.getOwnPropertyNames(items);
   for ( var i = 0; i < keys.length; i++ ) {
     item = items[keys[i]];
     if ( item["%TYPE"] === type ) {
@@ -464,7 +464,7 @@ function showTestOverview() {
     showActionBox( test_actions[i] );
   }
 }
-function showTestProject() {
+function loadTestItems() {
   function loadArray(arr) {
     for ( var i = 0; i < arr.length; i++ ) { 
       loadItem(arr[i]);
@@ -474,7 +474,29 @@ function showTestProject() {
   loadArray(test_actions);
   loadArray(test_persons);
   loadArray(test_emails);
+}
+function showTestProject() {
+  loadTestItems();
   showProjects();
   showProjectBox(test_projects[0]); 
   showProjectRelated(test_projects[0]);
+}
+function showTestItems() {
+  loadTestItems();
+  showOverview();
+  var keys = Object.getOwnPropertyNames(items);
+  for ( var i = 0; i < keys.length; i++ ) {
+    var item = items[keys[i]];
+    switch ( item["%TYPE"] ) {
+      case "project":
+        showProjectBox(item);
+        break;
+      case "person":
+        showContactBox(item);
+        break;
+      case "action":
+        showActionBox(item);
+        break;
+    }
+  }
 }
