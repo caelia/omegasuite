@@ -94,16 +94,32 @@ function focusItem(evt) {
 function unfocusItem(evt) {
   $( evt.target ).closest('.ItemBox').removeClass('Current');
 }
+function getSelectHandler(item, item_type) {
+  var show_related_fun = {
+    "project": showProjectRelated,
+    "action": showActionRelated,
+    "person": showContactRelated,
+    "event": showEventRelated,
+    "appointment": showAppointmentRelated,
+    "note": showNoteRelated,
+    "idea": showIdeaRelated
+  }[item_type];
+  return function(evt) {
+    $( evt.target ).closest('.ItemBox').children('.ItemContent').removeClass('Hidden');
+    show_related_fun(item);
+  }
+}
 function showItemBox(item, item_type, parent_sel, is_subitem) {
   var klass;
+  var label = getLabel(item, item_type); 
+  var box_id = item_type + "-" + item["%ID"] + "-box"; 
+  var item_box = $( "<div></div>" );
+  var select_handler = getSelectHandler(item, item_type);
   if ( is_subitem ) {
     klass = "SubItemBox";
   } else {
     klass = "ItemBox";
   }
-  var label = getLabel(item, item_type); 
-  var box_id = item_type + "-" + item["%ID"] + "-box"; 
-  var item_box = $( "<div></div>" );
   $( parent_sel ).append( item_box );
   $( item_box ).addClass( klass );
   $( item_box ).attr("id", box_id);
@@ -114,6 +130,9 @@ function showItemBox(item, item_type, parent_sel, is_subitem) {
   $( item_box ).bind("mouseenter", focusItem);
   $( item_box ).children('.ItemLabel').bind("mouseleave", unfocusItem);
   $( item_box ).bind("mouseleave", unfocusItem);
+  $( item_box ).bind("click", select_handler); 
+  $( item_box ).children('.ItemLabel').bind("click", select_handler); 
+  $( item_box ).children('.ItemContent').bind("click", select_handler); 
   return box_id;
 }
 function addOneLineField(container, label, data) {
