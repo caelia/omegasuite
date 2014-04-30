@@ -16,6 +16,83 @@ var display_specs = {
 var items = {};
 
 // =========================================================================
+var itemize(item_or_id) {
+  if ( typeof item_or_id === "string" ) {
+    return items[item_or_id];
+  } else {
+    return item_or_id;
+  data["%ID"] = item["%ID"];
+  }
+}
+var createUIItem = function(item) {
+  var type = item["%TYPE"];
+  var id = item["%ID"];
+  var keys = Object.getOwnPropertyNames(item); 
+  var data = {};
+  var key, i, ui_item;
+  for ( i = 0; i < keys.length; i++ ) {
+    key = keys[i];
+    if ( !(key === "%TYPE" || key === "%ID") ) {
+      data[key] = item[key];
+    }
+  }
+  ui_item = {
+    "item_box": null,
+    "parent_sel": null,
+    "data": data
+  }
+  items[id] = ui_item;
+  return ui_item;
+}
+var getUIItemData = function(item_or_id) {
+  var item = itemize(item_or_id);
+  data = item.data;
+  data["%ID"] = item["%ID"];
+  data["%TYPE"] = item["%TYPE"];
+  return data;
+}
+var destroyUIItem = function(id) {
+  destroyBox(id);
+  delete items[id];
+}
+var createBox = function(item_or_id, parent_sel, hidden) {
+  var item = itemize(item_or_id);
+  item.parent_sel = parent_sel;
+  item.box = $( "<div class='ItemBox'></div>" ).appendTo( parent_sel );
+  if ( hidden ) { 
+    $( item.box ).addClass("Hidden");
+  }
+  items
+}
+var destroyBox = function(item_or_id) {
+  var item = itemize(item_or_id);
+  if ( item.box ) {
+    $( item.box ).remove();
+    item.box = null;
+  }
+}
+var moveBox = function(item_or_id, new_parent_sel) {
+  var item = itemize(item_or_id);
+  this.parent_sel = new_parent_sel;
+  if ( item.box ) {
+    $( item.box ).detach();
+    $( item.box ).appendTo( new_parent_sel );
+  }
+}
+var showBox = function(item_or_id) {
+  var item = itemize(item_or_id);
+  if ( item.box ) {
+    $( item.box ).removeClass("Hidden");
+  }
+}
+var hideBox = function(item_or_id) {
+  var item = itemize(item_or_id);
+  if ( item.box ) {
+    $( item.box ).addClass("Hidden");
+  }
+}
+
+// =========================================================================
 function loadItem(item, replace) {
   var item_id = item["%ID"];
   if ( items.hasOwnProperty(item_id) && !replace ) {
