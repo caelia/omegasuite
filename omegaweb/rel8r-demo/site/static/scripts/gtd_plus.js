@@ -62,7 +62,6 @@ var createBox = function(item_or_id, parent_sel, hidden) {
   if ( hidden ) { 
     $( item.box ).addClass("Hidden");
   }
-  items
 }
 var destroyBox = function(item_or_id) {
   var item = itemize(item_or_id);
@@ -103,21 +102,6 @@ function loadItem(item, replace) {
 function unloadItem(item_id) {
   delete items[item_id];
 }
-/*
-function getItemByID(id) {
-  var matched = items.filter(function(item) {
-    return item["%ID"] === id;
-  });
-  switch ( matched.length ) {
-    case 0:
-      return null;
-    case 1:
-      return matched[0];
-    default:
-      throw "Error: duplicate item IDs";
-  }
-}
-*/
 function getItemsByType(type) {
   var result = [];
   for (var i in items) {
