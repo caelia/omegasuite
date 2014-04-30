@@ -1,16 +1,40 @@
 // =========================================================================
 var display_specs = {
   "project": {
-    "label": "title"
+    "label": "title",
+    "description": false,
+    "fields": {
+      "deadline": ["Deadline", false, "oneline"],
+      "contacts": ["Contacts", false, "multiline"],
+      "steps": ["Steps", false, "multiline"]
+    }
   },
   "action": {
-    "label": "content"
+    "label": "content",
+    "fields": {
+      "context": [false, false, "multiitem"]
+    }
+  },
+  "event": {
+  },
+  "appointment": {
   },
   "person": {
-    "label": "given-name & surname"
+    "label": "given-name & surname",
+    "fields": {
+      "email": ["Email Addresses", false, "multisub"],
+      "phone": ["Phone Numbers", false, "multisub"]
+    }
   },
   "email-address": {
-    "label": "label"
+    "label": "label",
+    "fields": {
+      "address": [false, true, "oneline"]
+    }
+  },
+  "note": {
+  },
+  "idea": {
   }
 };
 var items = {};
