@@ -40,12 +40,12 @@ var display_specs = {
 var items = {};
 
 // =========================================================================
-var itemize(item_or_id) {
+var itemize = function(item_or_id) {
   if ( typeof item_or_id === "string" ) {
     return items[item_or_id];
   } else {
     return item_or_id;
-  data["%ID"] = item["%ID"];
+    data["%ID"] = item["%ID"];
   }
 }
 var createUIItem = function(item) {
@@ -143,7 +143,7 @@ function getRelatedItems(type, relation, target_id) {
   for ( var i = 0; i < keys.length; i++ ) {
     item = items[keys[i]];
     if ( item["%TYPE"] === type ) {
-      matched += item;
+      matched.push(item);
     }
   }
   if ( matched.length > 0 ) {
